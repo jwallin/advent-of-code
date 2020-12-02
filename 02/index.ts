@@ -1,3 +1,4 @@
+import { isConstructorDeclaration } from 'typescript';
 import { readline } from '../utils/readline';
 
 type PasswordRule = {
@@ -16,13 +17,13 @@ function charAt(input:string, index:number):string {
 
 async function getPasswords():Promise<PasswordRule[]> {
   const passwords:string[] = (await readline('input.txt'));
-
   return passwords.map(x => {
-    const parts = x.split(/[- :]/);
+    const [posA, posB, letter, , password] = x.split(/[- :]/);
+
     return {
-      positions: parts.slice(0, 2).map(Number),
-      letter: parts[2],
-      password: parts[4]
+      positions: [posA, posB].map(Number),
+      letter,
+      password
     }
   });
 }
