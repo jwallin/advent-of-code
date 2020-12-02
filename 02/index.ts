@@ -18,13 +18,11 @@ async function getPasswords():Promise<PasswordRule[]> {
   const passwords:string[] = (await readline('input.txt'));
 
   return passwords.map(x => {
-    const parts = x.split(' ');
-    const positions = parts[0].split('-').map(Number);
-    const letter = parts[1].substr(0, 1);
+    const parts = x.split(/[- :]/);
     return {
-      positions,
-      letter,
-      password: parts[2]
+      positions: parts.slice(0, 2).map(Number),
+      letter: parts[2],
+      password: parts[4]
     }
   });
 }
@@ -54,4 +52,4 @@ async function partTwo() {
   console.log(validPasswords.length)
 }
 
-partTwo();
+partOne();
