@@ -1,15 +1,15 @@
 {
   "name": "advent-of-code-2020",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
     "start": "cd ${INIT_CWD} && ts-node index.ts"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/jwallin/advent-of-code-2020"
+  },
   "dependencies": {
     "typescript": "^4.1.2"
   },

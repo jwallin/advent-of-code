@@ -8,5 +8,5 @@ npm install
 ## Run in terminal
 ```sh
 cd 01
-npm run start
+npm start
 ```
