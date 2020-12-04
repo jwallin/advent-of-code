@@ -1,4 +1,4 @@
-import { lines, countDigits } from '../utils';
+import { lines, isValidYear } from '../utils';
 
 type PassportValidator = {
   [key: string]: (x: string) => boolean
@@ -40,10 +40,6 @@ async function getPassports():Promise<Passport> {
   
   return candidates.map(c => c.split(' ').map(x => x.split(':'))
                    .reduce((p, c) => Object.assign(p, { [c[0]]: c[1] }), {}));              
-}
-
-function isValidYear(input: number, min: number, max: number) {
-  return countDigits(input) === 4 && input >= min && input <= max;
 }
 
 async function partOne() {

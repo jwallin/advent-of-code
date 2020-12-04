@@ -11,3 +11,7 @@ export function countDigits(input: number): number {
 export function toChars(value:string): string[] {
   return [...value];
 }
+
+export function isValidYear(input: number, min: number, max: number) {
+  return countDigits(input) === 4 && input >= min && input <= max;
+}
