@@ -1,21 +1,17 @@
-import { readline } from '../utils/readline';
+import { lines, Direction, toChars } from '../utils';
+import { Matrix } from '../utils/matrix';
 
-type Direction = {
-  x: number,
-  y: number
-};
-
-async function getMatrix():Promise<string[][]> {
-  const passwords:string[] = (await readline('input.txt'));
-  return passwords.map(x => x.split(''));
+async function getMatrix():Promise<Matrix> {
+  const passwords:string[] = (await lines('input.txt'));
+  return new Matrix(passwords.map(toChars));
 }
 
-function traverseTrees(matrix: string[][], direction:Direction):number {
+function traverseTrees(matrix: Matrix, direction:Direction):number {
   let x = 0;
   let y = 0;
   let trees = 0;
-  while (y < matrix.length) {
-    if (matrix[y][x % matrix[y].length] === '#') {
+  while (y < matrix.rows.length) {
+    if (matrix.get(x % matrix.rows[y].length, y) === '#') {
       trees++;
     }
     x += direction.x;
@@ -25,13 +21,13 @@ function traverseTrees(matrix: string[][], direction:Direction):number {
 }
 
 async function partOne() {
-  const matrix:string[][] = await getMatrix();
+  const matrix = await getMatrix();
   const trees = traverseTrees(matrix, {x: 3, y: 1})
   console.log(trees);
 }
 
 async function partTwo() {
-  const matrix:string[][] = await getMatrix(); 
+  const matrix = await getMatrix(); 
   const directions:Direction[] = [
     {x: 1, y: 1}, 
     {x: 3, y: 1}, 

@@ -1,11 +1,11 @@
-import rl from 'readline';
-import fs from 'fs';
+import { createInterface } from 'readline';
+import { createReadStream } from 'fs';
 
-export function readline(fn:string):Promise<Array<string>> {
+export function lines(fn:string):Promise<Array<string>> {
   return new Promise((resolve, reject) => {
     let lines: Array<string> = [];
-    const r = rl.createInterface({
-      input: fs.createReadStream(fn)
+    const r = createInterface({
+      input: createReadStream(fn)
     });
     
     r.on('line', (input) => {
