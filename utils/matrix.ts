@@ -1,3 +1,4 @@
+import { HighlightSpanKind } from 'typescript';
 import { Position } from './types';
 
 export class Matrix {
@@ -25,5 +26,32 @@ export class Matrix {
 
   get(x: number, y:number): any {
     return this._getOrSetRow(y)[x];
+  }
+
+  draw(): string {
+    return this._matrix.map(x => x.map(y => y === undefined ? '' : y).join(' ')).join('\n');
+  }
+
+  hasValue(value: any): boolean {
+    return !!this.values().find(x => x === value);
+  }
+
+  *iterator(): Generator<Position> {
+    for (let y = 0; y < this._matrix.length; y++) {
+      if (!this._matrix[y]) {
+        continue;
+      }
+      for (let x = 0; x < this._matrix[y].length; x++) {
+        yield {x, y};
+      }
+    }
+  }
+
+  asArray() {
+    return [...this.iterator()];  
+  }
+
+  values(): any[] {
+    return this.asArray().map(({x, y}) => this.get(x, y));
   }
 }
