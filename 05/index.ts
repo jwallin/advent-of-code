@@ -70,7 +70,7 @@ async function partTwo() {
   });
 
   const mySeat = getMissingSeats(seatMatrix)
-                  .filter(x => seatMatrix.hasValue(x - 1) && seatMatrix.hasValue(x + 1))
+                  .find(x => seatMatrix.hasValue(x - 1) && seatMatrix.hasValue(x + 1))
   console.log(mySeat);
 }
 
