@@ -10,3 +10,4 @@ export const isValidYear = (input: number, min: number, max: number): boolean =>
 export const hasAllValuesFrom = (input:any[], target:any[]): boolean => target.every((v:any) => input.includes(v));
 export const range = (max:number):number[] => [...Array(max).keys()];
 export const unique = <U>(input: U[]): U[] => Array.from(new Set(input));
+export const sum = (a: number, b: number): number => a + b;

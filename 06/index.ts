@@ -1,10 +1,10 @@
-import { lines, toChars, unique } from '../utils';
+import { lines, toChars, unique, sum } from '../utils';
 
 async function partOne() {
   const groups: string[] = (await lines('input.txt')).join(' ').split('  ');
   const totalCount = groups.map(x => x.split(' ').map(y => toChars(y)).flat())
                            .map(z => new Set(z).size)
-                           .reduce((a, b) => a + b, 0);
+                           .reduce(sum, 0);
   console.log(totalCount)
 }
 
