@@ -9,15 +9,11 @@ type Bag = {
   [key: string]: BagContent[]
 };
 
-type P = {
-  [key: string]: string[]
-};
-
 async function getRules(): Promise<Bag> {
   const input: string[] = (await lines('input.txt'));
   return  input.reduce((acc: Bag, b: string) => {
     const d = b.split(' contain ').map(x => x.replace(/\sbag(s?)(\.?)/g, ''));
-    const content:BagContent[] = d[1].split(', ')
+    const content: BagContent[] = d[1].split(', ')
         .filter(x => x !== 'no other')
         .map(x => {
           const parts = x.split(/\s(.+)/);
@@ -32,18 +28,17 @@ async function getRules(): Promise<Bag> {
 async function partOne() {
   const rules: Bag = await getRules();
 
-  function lookFor(color: string, variations:Set<string> = new Set()) {
-    Object.keys(rules).forEach(r => {
+  function lookFor(color: string): string[] {
+    return Object.keys(rules).reduce((acc: string[], r: string) => {
       const bags = rules[r].find(y => y.color === color);
       if (bags) {
-        variations.add(r);
-        lookFor(r, variations)
+        return [...acc, r, ...lookFor(r)];
       }
-    });
-    return variations;
+      return acc;
+    }, []);
   }
   
-  console.log(lookFor('shiny gold').size)
+  console.log(unique(lookFor('shiny gold')).length)
 }
 
 async function partTwo() {
