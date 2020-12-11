@@ -40,14 +40,12 @@ function getRowAndSeat(input: string): PlaneSeat {
   return { row: rows[0], col: cols[0], ID: seatID(rows[0], cols[0]) };
 }
 
-function getMissingSeats(seatMatrix: Matrix) {
+function getMissingSeats(seatMatrix: Matrix<number>) {
   const missingSeats = [];
   for (let y = 0; y < PLANE_LENGTH; y++) {
     for (let x = 0; x < PLANE_WIDTH; x++) {
-      let id:number = seatMatrix.get({x, y});
-      if (id === undefined) {
-        id = seatID(y, x);
-        missingSeats.push(id);
+      if (!seatMatrix.has({x, y})) {
+        missingSeats.push(seatID(y, x));
       }
     }
   }
@@ -62,7 +60,7 @@ async function partOne() {
 
 async function partTwo() {
   const seats:string[] = (await lines('input.txt'));
-  const seatMatrix = new Matrix();
+  const seatMatrix = new Matrix<number>();
 
   seats.forEach(x => {
     const seat = getRowAndSeat(x);
@@ -74,5 +72,5 @@ async function partTwo() {
   console.log(mySeat);
 }
 
+partOne();
 partTwo();
-

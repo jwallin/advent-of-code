@@ -12,10 +12,10 @@ const DIRECTIONS: Position[] =[
   { x: -1, y: -1 }, // NW
 ];
 
-export class Matrix {
-  private _matrix: any[][];
+export class Matrix<T> {
+  private _matrix: T[][];
 
-  constructor(matrix: any[][] = []) {
+  constructor(matrix: T[][] = []) {
     this._matrix = matrix;
   }
 
@@ -27,23 +27,17 @@ export class Matrix {
     return row;
   }
 
-  private _isValidPosition(p: Position) {
-    return p.x >= 0 
-      && p.y >= 0 
-      && p.y <= this._matrix.length;
-  }
-
-  get rows(): any[] {
+  get rows(): T[][] {
     return this._matrix;
   }
 
-  set(pos: Position, value: any) {
+  set(pos: Position, value: T) {
     this._getOrSetRow(pos.y)[pos.x] = value;
   }
 
-  get(pos: Position): any {
-    if (!this._isValidPosition(pos) || this._matrix[pos.y] === undefined) {
-      return undefined;
+  get(pos: Position): T {
+    if (!this.has(pos)) {
+      throw new Error(`Item not found ${pos}`);
     }
     return this._matrix[pos.y][pos.x];
   }
@@ -52,7 +46,11 @@ export class Matrix {
     return this._matrix.map(x => x.map(y => y === undefined ? '' : y).join(' ')).join('\n');
   }
 
-  hasValue(value: any): boolean {
+  has(p: Position) {
+    return this._matrix[p.y] && this._matrix[p.y][p.x] !== undefined;
+  }
+
+  hasValue(value: T): boolean {
     return !!this.values().find(x => x === value);
   }
 
@@ -62,7 +60,7 @@ export class Matrix {
         continue;
       }
       for (let x = 0; x < this._matrix[y].length; x++) {
-        yield {x, y};
+        yield { x, y };
       }
     }
   }
@@ -71,27 +69,27 @@ export class Matrix {
     return [...this.iterator()];  
   }
 
-  values(): any[] {
-    return this.asArray().map((p:Position) => this.get(p));
+  values(): (T)[] {
+    return this.asArray().filter(p => this.has(p)).map((p:Position) => this.get(p));
   }
 
-  clone(): Matrix {
+  clone(): Matrix<T> {
     return new Matrix(JSON.parse(JSON.stringify(this._matrix)));
   }
 
-  adjacentValues(p: Position): any[] {
-    return DIRECTIONS.map(d => sum(p, d)).map(p => this.get(p));
+  adjacentValues(p: Position): (T)[] {
+    return DIRECTIONS.map(d => sum(p, d)).filter(x => this.has(x)).map(p => this.get(p));
   }
 
-  equals(m: Matrix): boolean {
+  equals(m: Matrix<T>): boolean {
     return JSON.stringify(this.rows) === JSON.stringify(m.rows);
   }
 
-  visibleValues(pos: Position, predicate: (x: any) => boolean): any[] {
+  visibleValues(pos: Position, predicate: (x: T) => boolean): T[] {
     //Walk in each direction, until unvalid pos
-    return DIRECTIONS.reduce((acc: any[], d) => {
+    return DIRECTIONS.reduce((acc: T[], d) => {
       let newPos = sum(pos, d);
-      while(this._isValidPosition(newPos) && this.get(newPos) !== undefined) {
+      while(this.has(newPos)) {
         const val = this.get(newPos);
         if (predicate(val)) {
           return [...acc, val];

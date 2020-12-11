@@ -1,12 +1,12 @@
 import { lines, Direction, toChars } from '../utils';
 import { Matrix } from '../utils/matrix';
 
-async function getMatrix():Promise<Matrix> {
+async function getMatrix(): Promise<Matrix<string>> {
   const passwords:string[] = (await lines('input.txt'));
   return new Matrix(passwords.map(toChars));
 }
 
-function traverseTrees(matrix: Matrix, direction:Direction):number {
+function traverseTrees(matrix: Matrix<string>, direction:Direction):number {
   let x = 0;
   let y = 0;
   let trees = 0;
@@ -39,4 +39,5 @@ async function partTwo() {
   console.log(totalTrees)
 }
 
+partOne();
 partTwo();

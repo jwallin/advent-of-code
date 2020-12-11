@@ -10,12 +10,12 @@ const isSeat = (val: string): boolean => isOccupied(val) || isEmpty(val);
 
 const countOccupiedSeats = (input: string[]): number => input.filter(isOccupied).length;
 
-async function getMatrix():Promise<Matrix> {
+async function getMatrix():Promise<Matrix<string>> {
   const seats:string[] = (await lines('input.txt'));
   return new Matrix(seats.map(toChars));
 }
 
-function applyRules(matrix: Matrix, updateSeat: (matrix: Matrix, p: Position) => string):Matrix {
+function applyRules(matrix: Matrix<string>, updateSeat: (matrix: Matrix<string>, p: Position) => string): Matrix<string> {
   const newMatrix = matrix.clone();
   matrix.asArray().forEach((p: Position) => {
     newMatrix.set(p, updateSeat(matrix, p));
@@ -23,7 +23,7 @@ function applyRules(matrix: Matrix, updateSeat: (matrix: Matrix, p: Position) =>
   return newMatrix;
 }
 
-async function run(updateSeat: (matrix: Matrix, p: Position) => string): Promise<Matrix> {
+async function run(updateSeat: (matrix: Matrix<string>, p: Position) => string): Promise<Matrix<string>> {
   let matrix = await getMatrix();
   let oldMatrix;
   let i = 0;
@@ -36,7 +36,7 @@ async function run(updateSeat: (matrix: Matrix, p: Position) => string): Promise
 }
 
 async function partOne() {
-  const matrix = await run((matrix: Matrix, p: Position) => {
+  const matrix = await run((matrix: Matrix<string>, p: Position) => {
     const seat = matrix.get(p);
     const adjacent = matrix.adjacentValues(p);
     
@@ -51,7 +51,7 @@ async function partOne() {
 }
 
 async function partTwo() {
-  const matrix = await run((matrix: Matrix, p: Position) => {
+  const matrix = await run((matrix: Matrix<string>, p: Position) => {
     const seat = matrix.get(p);
     const visibleSeats = matrix.visibleValues(p, (x:string) => isSeat(x));
   
@@ -65,4 +65,5 @@ async function partTwo() {
   console.log(countOccupiedSeats(matrix.values()));
 }
 
+partOne();
 partTwo();
