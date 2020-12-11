@@ -8,7 +8,7 @@ const isOccupied = (seat: string): boolean => seat === SEAT_OCCUPIED;
 const isEmpty = (seat: string): boolean => seat === SEAT_EMPTY;
 const isSeat = (val: string): boolean => isOccupied(val) || isEmpty(val);
 
-const occupiedSeats = (input: string[]): number => input.filter(isOccupied).length;
+const countOccupiedSeats = (input: string[]): number => input.filter(isOccupied).length;
 
 async function getMatrix():Promise<Matrix> {
   const seats:string[] = (await lines('input.txt'));
@@ -39,14 +39,15 @@ async function partOne() {
   const matrix = await run((matrix: Matrix, p: Position) => {
     const seat = matrix.get(p);
     const adjacent = matrix.adjacentValues(p);
-    if (isEmpty(seat) && occupiedSeats(adjacent) === 0) {
+    
+    if (isEmpty(seat) && countOccupiedSeats(adjacent) === 0) {
       return SEAT_OCCUPIED;
-    } else if (isOccupied(seat) && occupiedSeats(adjacent) >= 4) {
+    } else if (isOccupied(seat) && countOccupiedSeats(adjacent) >= 4) {
       return SEAT_EMPTY;
     }
     return seat;
   });
-  console.log(occupiedSeats(matrix.values()));
+  console.log(countOccupiedSeats(matrix.values()));
 }
 
 async function partTwo() {
@@ -54,15 +55,14 @@ async function partTwo() {
     const seat = matrix.get(p);
     const visibleSeats = matrix.visibleValues(p, (x:string) => isSeat(x));
   
-    if (isEmpty(seat) && occupiedSeats(visibleSeats) === 0) {
+    if (isEmpty(seat) && countOccupiedSeats(visibleSeats) === 0) {
       return SEAT_OCCUPIED;
-    } else if (isOccupied(seat) && occupiedSeats(visibleSeats) >= 5) {
+    } else if (isOccupied(seat) && countOccupiedSeats(visibleSeats) >= 5) {
       return SEAT_EMPTY;
     }
     return seat;
   });
-  console.log(matrix.draw())
-  console.log(occupiedSeats(matrix.values()));
+  console.log(countOccupiedSeats(matrix.values()));
 }
 
-partOne();
+partTwo();

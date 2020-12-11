@@ -18,3 +18,5 @@ export const intify = (input: string[]): (string | number)[] => input.map(s => i
 
 export const pairs = (array: number[]): number[][] => Array.from(combinations(array, 2));
 export const triplets = (array:number[]): number[][] => Array.from(combinations(array, 3));
+
+export const sumPositions = (p1: Position, p2: Position): Position => ({ x: p1.x + p2.x, y: p1.y + p2.y });

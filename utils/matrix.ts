@@ -1,4 +1,5 @@
 import { Position } from './types';
+import { sumPositions as sum } from './index';
 
 const DIRECTIONS: Position[] =[
   { x: 0, y: -1 },  // N
@@ -10,10 +11,6 @@ const DIRECTIONS: Position[] =[
   { x: -1, y: 0 },  // W
   { x: -1, y: -1 }, // NW
 ];
-
-function sum(p1: Position, p2: Position): Position {
-  return { x: p1.x + p2.x, y: p1.y + p2.y };
-}
 
 export class Matrix {
   private _matrix: any[][];
