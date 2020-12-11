@@ -11,26 +11,9 @@ const DIRECTIONS: Position[] =[
   { x: -1, y: -1 }, // NW
 ];
 
-function adjacentPositions(p: Position) {
-  const { x, y } = p;
-  return [
-    { x: x - 1, y: y - 1 },
-    { x, y: y - 1 },
-    { x: x + 1, y: y - 1 },
-    { x: x - 1, y },
-    { x: x + 1, y },
-    { x: x - 1, y: y + 1 },
-    { x, y: y + 1 },
-    { x: x + 1, y: y + 1 }
-  ];
+function sum(p1: Position, p2: Position): Position {
+  return { x: p1.x + p2.x, y: p1.y + p2.y };
 }
-
-function goToPos(from: Position, to:Position):Position {
-  return {
-    x: from.x + to.x,
-    y: from.y + to.y
-  };
-} 
 
 export class Matrix {
   private _matrix: any[][];
@@ -99,8 +82,8 @@ export class Matrix {
     return new Matrix(JSON.parse(JSON.stringify(this._matrix)));
   }
 
-  adjacent(p: Position): any[] {
-    return adjacentPositions(p).map(p => this.get(p));
+  adjacentValues(p: Position): any[] {
+    return DIRECTIONS.map(d => sum(p, d)).map(p => this.get(p));
   }
 
   equals(m: Matrix): boolean {
@@ -109,18 +92,16 @@ export class Matrix {
 
   visibleValues(pos: Position, predicate: (x: any) => boolean): any[] {
     //Walk in each direction, until unvalid pos
-    let found:any[] = [];
-    DIRECTIONS.forEach(d => {
-      let newPos = { x: pos.x + d.x, y: pos.y + d.y };;
+    return DIRECTIONS.reduce((acc: any[], d) => {
+      let newPos = sum(pos, d);
       while(this._isValidPosition(newPos) && this.get(newPos) !== undefined) {
         const val = this.get(newPos);
         if (predicate(val)) {
-          found.push(val);
-          break;
+          return [...acc, val];
         }
-        newPos = { x: newPos.x + d.x, y: newPos.y + d.y };
+        newPos = sum(newPos, d);
       }
-    })
-    return found;
+      return acc;
+    }, []);
   }
 }

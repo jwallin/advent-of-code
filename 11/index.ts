@@ -38,7 +38,7 @@ async function run(updateSeat: (matrix: Matrix, p: Position) => string): Promise
 async function partOne() {
   const matrix = await run((matrix: Matrix, p: Position) => {
     const seat = matrix.get(p);
-    const adjacent = matrix.adjacent(p);
+    const adjacent = matrix.adjacentValues(p);
     if (isEmpty(seat) && occupiedSeats(adjacent) === 0) {
       return SEAT_OCCUPIED;
     } else if (isOccupied(seat) && occupiedSeats(adjacent) >= 4) {
