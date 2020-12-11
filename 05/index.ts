@@ -44,7 +44,7 @@ function getMissingSeats(seatMatrix: Matrix) {
   const missingSeats = [];
   for (let y = 0; y < PLANE_LENGTH; y++) {
     for (let x = 0; x < PLANE_WIDTH; x++) {
-      let id:number = seatMatrix.get(x, y);
+      let id:number = seatMatrix.get({x, y});
       if (id === undefined) {
         id = seatID(y, x);
         missingSeats.push(id);

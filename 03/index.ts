@@ -11,7 +11,7 @@ function traverseTrees(matrix: Matrix, direction:Direction):number {
   let y = 0;
   let trees = 0;
   while (y < matrix.rows.length) {
-    if (matrix.get(x % matrix.rows[y].length, y) === '#') {
+    if (matrix.get({x: x % matrix.rows[y].length, y}) === '#') {
       trees++;
     }
     x += direction.x;
