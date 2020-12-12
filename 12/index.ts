@@ -21,18 +21,11 @@ const LeftRight: Bearing = {
   R: 1
 };
 
-enum OrdinalDirection {
-  N = 'N',
-  E = 'E',
-  S = 'S',
-  W = 'W'
-};
-
 const DIRECTIONS: NavigationDirection = {
-  [OrdinalDirection.N]: { x: 0, y: -1 },    // N
-  [OrdinalDirection.E]: { x: 1, y: 0 },     // E
-  [OrdinalDirection.S]: { x: 0, y: 1 },     // S
-  [OrdinalDirection.W]:  { x: -1, y: 0 },   // W
+  'N': { x: 0, y: -1 },    // N
+  'E': { x: 1, y: 0 },     // E
+  'S': { x: 0, y: 1 },     // S
+  'W': { x: -1, y: 0 },    // W
 };
 
 function toInstruction(input: string): Instruction {
@@ -72,18 +65,18 @@ function rotatePosition(pos: Position, dir:number, angle: number): Position {
 async function partOne() {
   const instructions = (await getInput()).map(x => toInstruction(x));
   let currentPos: Position = { x: 0, y: 0 };
-  let direction: Position = DIRECTIONS[OrdinalDirection.E];
+  let direction: Position = DIRECTIONS['E'];
   
   instructions.forEach(i => {
     if (i.direction === DIRECTION_FORWARD) {
       // Move forward in saved direction
       currentPos = moveInDirection(currentPos, direction, i.value);
-    } else if (i.direction in OrdinalDirection) {
+    } else if (i.direction in DIRECTIONS) {
       // Move in direction withouth updating it
       const d = DIRECTIONS[i.direction];
       currentPos = moveInDirection(currentPos, d, i.value);
     } else {
-      // Left Rigth should turn ship and calculate new direction
+      // Left & Right should turn ship and calculate new direction
       direction = rotatePosition(direction, LeftRight[i.direction], i.value);
     }
   });
@@ -98,7 +91,7 @@ async function partTwo() {
   instructions.forEach(i => {
     if (i.direction === DIRECTION_FORWARD) {
       currentPos = moveInDirection(currentPos, wayPoint, i.value);
-    } else if (i.direction in OrdinalDirection) {
+    } else if (i.direction in DIRECTIONS) {
       // Move in direction withouth updating it
       const dir = DIRECTIONS[i.direction];
       wayPoint = moveInDirection(wayPoint, dir, i.value);
