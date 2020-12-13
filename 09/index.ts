@@ -1,4 +1,4 @@
-import { lines, pairs, sum } from '../utils';
+import { getInput, pairs, sum } from '../utils';
 
 function findInvalidNumber(input: number[], preambleLength: number): number | undefined {
   const allValues = input.slice(); // Copy array to avoid mutation of parameter
@@ -16,13 +16,13 @@ function findInvalidNumber(input: number[], preambleLength: number): number | un
 }
 
 async function partOne() {
-  const input: number[] = (await lines('input.txt')).map(Number);
+  const input: number[] = (await getInput()).map(Number);
   const invalidNum = findInvalidNumber(input, 25);
   console.log(`${invalidNum} is invalid`);
 }
 
 async function partTwo() {
-  const input: number[] = (await lines('input.txt')).map(Number);
+  const input: number[] = (await getInput()).map(Number);
   const invalidNum = findInvalidNumber(input, 25);
   if (invalidNum === undefined) {
     console.log('All values are valid')

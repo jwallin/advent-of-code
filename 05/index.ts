@@ -1,4 +1,4 @@
-import { toChars, lines, range } from '../utils';
+import { toChars, getInput, range } from '../utils';
 import { Matrix } from '../utils/matrix';
 
 const PLANE_LENGTH = 128;
@@ -55,13 +55,13 @@ function getMissingSeats(seatMatrix: Matrix) {
 }
 
 async function partOne() {
-  const seats:string[] = (await lines('input.txt'));
+  const seats:string[] = (await getInput('input.txt'));
   const highestID = seats.reduce((acc, curr) => Math.max(acc, getRowAndSeat(curr).ID), 0);
   console.log(highestID);
 }
 
 async function partTwo() {
-  const seats:string[] = (await lines('input.txt'));
+  const seats:string[] = (await getInput('input.txt'));
   const seatMatrix = new Matrix();
 
   seats.forEach(x => {

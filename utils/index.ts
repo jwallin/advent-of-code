@@ -2,7 +2,6 @@ import { lines } from './lines';
 import { Direction, Position } from './types';
 import { combinations } from './combinations';
 
-export { lines };
 export { Direction, Position };
 export { combinations };
 
@@ -20,3 +19,5 @@ export const pairs = (array: number[]): number[][] => Array.from(combinations(ar
 export const triplets = (array:number[]): number[][] => Array.from(combinations(array, 3));
 
 export const sumPositions = (p1: Position, p2: Position): Position => ({ x: p1.x + p2.x, y: p1.y + p2.y });
+
+export const getInput = async (filename:string = 'input.txt'):Promise<string[]> => await lines(filename);

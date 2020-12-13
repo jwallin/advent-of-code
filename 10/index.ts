@@ -1,7 +1,7 @@
-import { lines, subtract, sum } from '../utils';
+import { getInput, subtract, sum } from '../utils';
 
 async function partOne() {
-  const adapters: number[] = (await lines('input.txt')).map(Number).sort(subtract);
+  const adapters: number[] = (await getInput()).map(Number).sort(subtract);
   adapters.unshift(0);
   adapters.push(adapters[adapters.length - 1] + 3);
 
@@ -19,7 +19,7 @@ async function partOne() {
 }
 
 async function partTwo() {
-  const adapters: number[] = (await lines('input.txt')).map(Number).sort(subtract);
+  const adapters: number[] = (await getInput()).map(Number).sort(subtract);
   adapters.push(adapters[adapters.length - 1] + 3);
 
   const variations: number[] = [1];

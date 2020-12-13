@@ -1,8 +1,4 @@
-import { lines } from '../utils';
-
-async function getInput():Promise<string[]> {
-  return await lines('input.txt');
-}
+import { getInput } from '../utils';
 
 async function partOne() {
   const timetable = await getInput();

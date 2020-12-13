@@ -1,4 +1,4 @@
-import { lines } from '../utils';
+import { getInput } from '../utils';
 import { Position } from '../utils/types';
 
 const DIRECTION_FORWARD = 'F';
@@ -36,10 +36,6 @@ function toInstruction(input: string): Instruction {
     direction,
     value
   }
-}
-
-async function getInput():Promise<string[]> {
-  return await lines('input.txt');
 }
 
 function moveInDirection(pos: Position, dir: Position, steps: number): Position {

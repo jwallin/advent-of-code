@@ -1,4 +1,4 @@
-import { lines, unique } from '../utils';
+import { getInput, unique } from '../utils';
 
 type BagContent = {
   quantity: number,
@@ -10,8 +10,7 @@ type Bag = {
 };
 
 async function getRules(): Promise<Bag> {
-  const input: string[] = (await lines('input.txt'));
-  return  input.reduce((acc: Bag, b: string) => {
+  return  (await getInput()).reduce((acc: Bag, b: string) => {
     const d = b.split(' contain ').map(x => x.replace(/\sbag(s?)(\.?)/g, ''));
     const content: BagContent[] = d[1].split(', ')
         .filter(x => x !== 'no other')

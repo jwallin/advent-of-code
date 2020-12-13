@@ -1,4 +1,4 @@
-import { lines, isValidYear, hasAllValuesFrom } from '../utils';
+import { getInput, isValidYear, hasAllValuesFrom } from '../utils';
 
 type PassportValidator = (x: string) => boolean
 
@@ -39,7 +39,7 @@ const FIELDS: PassportField = {
 }
 
 async function getPassports():Promise<Passport[]> {
-  const candidates: string[] = (await lines('input.txt')).join(' ').split('  ');;
+  const candidates: string[] = (await getInput()).join(' ').split('  ');;
   
   return candidates.map(c => c.split(' ').map(x => x.split(':'))
                    .reduce((p, c) => Object.assign(p, { [c[0]]: c[1] }), {}));              

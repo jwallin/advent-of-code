@@ -1,4 +1,4 @@
-import { lines } from '../utils';
+import { getInput } from '../utils';
 import { Instruction, INSTRUCTIONS, Computer } from './computer';
 
 function getInstructions(input:string[]): Instruction[] {
@@ -11,8 +11,7 @@ function getInstructions(input:string[]): Instruction[] {
 } 
 
 async function partOne() {
-  const input: string[] = await lines('input.txt');
-  const instructions = getInstructions(input);
+  const instructions = getInstructions(await getInput());
 
   const computer = new Computer(instructions);
   computer.run()
@@ -20,8 +19,7 @@ async function partOne() {
 }
 
 async function partTwo() {
-  const input: string[] = await lines('input.txt');
-  const instructions = getInstructions(input);
+  const instructions = getInstructions(await getInput());
   
   instructions.forEach((x, i) => {
     if (x.op !== INSTRUCTIONS.JMP && x.op !== INSTRUCTIONS.NOP) {

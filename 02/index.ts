@@ -1,4 +1,4 @@
-import { lines } from '../utils';
+import { getInput } from '../utils';
 
 type PasswordRule = {
   positions: number[],
@@ -15,7 +15,7 @@ function charAt(input:string, index:number):string {
 }
 
 async function getPasswords():Promise<PasswordRule[]> {
-  const passwords:string[] = (await lines('input.txt'));
+  const passwords:string[] = await getInput();
   return passwords.map(x => {
     const [posA, posB, letter, , password] = x.split(/[- :]/);
 

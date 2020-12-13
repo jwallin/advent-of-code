@@ -1,9 +1,8 @@
-import { lines, Direction, toChars } from '../utils';
+import { getInput, Direction, toChars } from '../utils';
 import { Matrix } from '../utils/matrix';
 
 async function getMatrix():Promise<Matrix> {
-  const passwords:string[] = (await lines('input.txt'));
-  return new Matrix(passwords.map(toChars));
+  return new Matrix((await getInput()).map(toChars));
 }
 
 function traverseTrees(matrix: Matrix, direction:Direction):number {

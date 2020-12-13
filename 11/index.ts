@@ -1,4 +1,4 @@
-import { lines, Position, toChars } from '../utils';
+import { getInput, Position, toChars } from '../utils';
 import { Matrix } from '../utils/matrix';
 
 const SEAT_OCCUPIED = '#';
@@ -11,7 +11,7 @@ const isSeat = (val: string): boolean => isOccupied(val) || isEmpty(val);
 const countOccupiedSeats = (input: string[]): number => input.filter(isOccupied).length;
 
 async function getMatrix():Promise<Matrix> {
-  const seats:string[] = (await lines('input.txt'));
+  const seats:string[] = await getInput();
   return new Matrix(seats.map(toChars));
 }
 

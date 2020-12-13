@@ -1,7 +1,7 @@
-import { lines, toChars, unique, sum } from '../utils';
+import { getInput, toChars, unique, sum } from '../utils';
 
 async function partOne() {
-  const groups: string[] = (await lines('input.txt')).join(' ').split('  ');
+  const groups: string[] = (await getInput()).join(' ').split('  ');
   const totalCount = groups.map(x => x.split(' ').map(y => toChars(y)).flat())
                            .map(z => new Set(z).size)
                            .reduce(sum, 0);
@@ -9,7 +9,7 @@ async function partOne() {
 }
 
 async function partTwo() {
-  const groups: string[][] = (await lines('input.txt')).join(' ').split('  ').map(x => x.split(' '));
+  const groups: string[][] = (await getInput()).join(' ').split('  ').map(x => x.split(' '));
   const total = groups.reduce((prev, curr) => {
     const answers:string[] = unique(curr.map(y => toChars(y)).flat());
     const gm = curr.map(x => x.split(''));
