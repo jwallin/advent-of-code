@@ -68,7 +68,7 @@ export class Matrix {
   }
 
   asArray() {
-    return [...this.iterator()];  
+    return [...this.iterator()];
   }
 
   values(): any[] {

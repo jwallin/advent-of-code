@@ -22,3 +22,13 @@ export const triplets = (array:number[]): number[][] => Array.from(combinations(
 export const sumPositions = (p1: Position, p2: Position): Position => ({ x: p1.x + p2.x, y: p1.y + p2.y });
 
 export const getInput = async (filename:string = 'input.txt'):Promise<string[]> => await lines(filename);
+
+export const prependZeros = (input: string, length: number): string[] => [...Array(Math.max(length - input.length + 1, 0)).join('0'), ...toChars(input)];
+
+export function* nestedLoops(range:number, n:number): Generator<number[]> {
+  const max = Math.pow(range, n);
+  for (let i = 0; i < max; i++) {
+    const g = Number(i).toString(range);
+    yield prependZeros(g, n).map(Number)
+  }
+}

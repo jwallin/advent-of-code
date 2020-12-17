@@ -1,82 +1,71 @@
-import { getInput, toChars, Position, unique, sum } from '../utils';
+import { getInput, toChars, unique, nestedLoops } from '../utils';
 
-type Position3D = {
-  x: number,
-  y: number,
-  z: number
-};
+const DIM_NAMES = ['x', 'y', 'z', 'w'];
+const NUM_CYCLES = 6;
+
+interface Position {
+  [key: string]: number
+}
 
 type CubeMap = Map<string, boolean>;
 
-async function getMap():Promise<CubeMap> {
+async function getMap(dimensions: number = 3):Promise<CubeMap> {
   const map = new Map<string, boolean>();
   const input = (await getInput()).map(toChars);
   for(let y = 0; y < input.length; y++) {
     for(let x = 0; x < input[y].length; x++) {
-      map.set(JSON.stringify({x, y, z: 0}), input[y][x] === '#');
+      const o = DIM_NAMES.slice(2, dimensions).reduce((prev, curr) => ({...prev, [curr]: 0}), {x, y});
+      map.set(JSON.stringify(o), input[y][x] === '#');
     }
   }
   return map;
 }
 
-const NEIGHBORS = (function(): Position3D[] {
-  const res = [];
-  const vals = [-1, 0, 1];
-  for (let x = 0; x < vals.length; x++) {
-    for (let y = 0; y < vals.length; y++) {
-      for (let z = 0; z < vals.length; z++) {
-        const v = {
-          x: vals[x],
-          y: vals[y],
-          z: vals[z]
-        };
-        if (v.x === 0 && v.y === 0 && v.z === 0) {
-          continue; // Skip self
-        }
-        res.push(v);
-      }
-    }
-  }
-  return res;
-})();
+const sumPosition = (a: Position, b:Position): Position => Object.keys(a).reduce((acc, curr) => Object.assign(acc, {[curr]: a[curr] + b[curr]}), {});
 
-function getNeighbors(pos: Position3D):Position3D[] {
-  return NEIGHBORS.map(d => ({x: d.x + pos.x, y: d.y + pos.y, z: d.z + pos.z}));
+function getNeighbors(pos: Position, neighborValues: Position[]): Position[] {
+  return neighborValues.map(d => sumPosition(d, pos));
 }
 
-function cycle(cubes: CubeMap):CubeMap {
+function getNeighborValues(dimensions: number):Position[] {
+  const VALS = [-1, 0, 1];
+  const props = [...nestedLoops(VALS.length, dimensions)].map(x => x.reduce((prev, curr, i) => ({...prev, [DIM_NAMES[i]]: VALS[curr]}), {}));
+  // Remove self
+  return props.filter(x => !Object.values(x).every(y => y === 0));
+}
+
+function cycle(cubes: CubeMap, dimensions:number):CubeMap {
   const newMap = new Map<string, boolean>();
+  const neighbourValues = getNeighborValues(dimensions);
+
   // Go over all cubes + their neighbours
-  const allNeighbors = unique([...cubes.keys()].map(c => JSON.parse(c)).map(pos => getNeighbors(pos)).flat());
+  const allNeighbors = unique([...cubes.keys()].map(c => JSON.parse(c)).map(pos => getNeighbors(pos, neighbourValues)).flat());
   allNeighbors.forEach(pos => {
     const posString = JSON.stringify(pos)
     const cube = cubes.get(posString);
-    const neighbors = getNeighbors(pos).map(x => cubes.get(JSON.stringify(x)));
+    const neighbors = getNeighbors(pos, neighbourValues).map(x => cubes.get(JSON.stringify(x)));
     const activeNeighbors = neighbors.filter(n => n === true).length;
-    if (cube === true) {
+    if (cube) {
       if (activeNeighbors === 2 || activeNeighbors === 3) {
         newMap.set(posString, true);
       } else {
         newMap.set(posString, false);
       }
-    } else {
-      if (activeNeighbors === 3) {
-        newMap.set(posString, true);
-      }
+    } else if (activeNeighbors === 3) {
+      newMap.set(posString, true);
     }
   });
 
   return newMap;
 }
 
-async function partOne() {
-  let newMatrix = await getMap();
-  for (let i = 0; i < 6; i++) {
-    newMatrix = cycle(newMatrix);
+async function run(dimensions: number) {
+  let newMatrix = await getMap(dimensions);
+  for (let i = 0; i < NUM_CYCLES; i++) {
+    newMatrix = cycle(newMatrix, dimensions);
     const activeCubes = [...newMatrix.entries()].filter(([pos, active]) => active === true);
     console.log(i, activeCubes.length)
   }
-  
 }
 
-partOne()
+run(4);

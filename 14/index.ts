@@ -1,4 +1,4 @@
-import { getInput, toChars, sum } from '../utils';
+import { getInput, toChars, sum, prependZeros } from '../utils';
 
 enum InstructionType {
   Mask,
@@ -21,10 +21,6 @@ type MaskInstruction = {
 };
 
 type Instruction = MemoryInstruction | MaskInstruction;
-
-function prependZeros(input: string, length: number): string[] {
-  return [...Array(Math.max(length - input.length + 1, 0)).join('0'), ...toChars(input)];
-}
 
 function toBitArray(value: number, length: number = 0): string[] {
   return prependZeros(value.toString(2), length);
