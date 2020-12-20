@@ -4,3 +4,8 @@ export type Position = {
 };
 
 export type Direction = Position;
+
+export type KeyValuePair<T,U> = {
+  a: T,
+  b: U
+};
