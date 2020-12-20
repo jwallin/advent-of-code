@@ -32,3 +32,24 @@ export function* nestedLoops(range:number, n:number): Generator<number[]> {
     yield prependZeros(g, n).map(Number)
   }
 }
+
+export const allEnumNames = (inp:Object):string[] => Object.values(inp).filter(x => typeof x === 'string');
+
+export function splitArray<T>(input:T[], splitter:T):T[][] {
+  const res:T[][] = [];
+  while(input.includes(splitter)) {
+    const end = input.indexOf(splitter);
+    const removed = input.splice(0, end + 1);
+    res.push(removed.slice(0, removed.length - 1));
+  }
+  res.push(input);
+  return res;
+}
+
+export const maxPosition = (input:Position[]):Position => input.reduce((prev, curr) => {
+  return { x: Math.max(prev.x, curr.x), y: Math.max(prev.y, curr.y) }
+});
+
+export const minPosition = (input:Position[]):Position => input.reduce((prev, curr) => {
+  return { x: Math.min(prev.x, curr.x), y: Math.min(prev.y, curr.y) }
+});

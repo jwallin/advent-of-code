@@ -1,4 +1,4 @@
-import { getInput, Position, toChars, sumPositions, multiply } from '../utils';
+import { getInput, Position, toChars, sumPositions, multiply, allEnumNames, splitArray, maxPosition, minPosition } from '../utils';
 import { Matrix } from '../utils/matrix';
 
 type Image = {
@@ -18,13 +18,6 @@ enum Flip {
   None
 };
 
-enum Rotation {
-  Deg0 = 0,
-  Deg90 = 1,
-  Deg180 = 2,
-  Deg270 = 3
-};
-
 type DirectionMap = {
   [key:string]: Position
 }
@@ -36,18 +29,28 @@ const DIRECTIONS:DirectionMap = {
   W: { x: -1, y: 0 },  // W
 };
 
-const allEnumNames = (inp:Object):string[] => Object.values(inp).filter(x => typeof x === 'string')
-
-function splitArray<T>(input:T[], splitter:T):T[][] {
-  const res:T[][] = [];
-  while(input.includes(splitter)) {
-    const end = input.indexOf(splitter);
-    const removed = input.splice(0, end + 1);
-    res.push(removed.slice(0, removed.length - 1));
-  }
-  res.push(input);
-  return res;
-}
+/*
+                  # 
+#    ##    ##    ###
+ #  #  #  #  #  #  
+*/
+ const SEA_MONSTER_PATTERN:Position[] = [
+  { x: 18, y: 0 },
+  { x: 0, y: 1 },
+  { x: 5, y: 1 },
+  { x: 6, y: 1 },
+  { x: 11, y: 1 },
+  { x: 12, y: 1 },
+  { x: 17, y: 1 },
+  { x: 18, y: 1 },
+  { x: 19, y: 1 },
+  { x: 1, y: 2 },
+  { x: 4, y: 2 },
+  { x: 7, y: 2 },
+  { x: 10, y: 2 },
+  { x: 13, y: 2 },
+  { x: 16, y: 2 },
+];
 
 function getVariations(m:Matrix):Matrix[] {
   const l:Matrix[] = [];
@@ -132,7 +135,7 @@ function matches(img:Matrix, p:Position, matrix:Map<string, Image>):boolean {
   return true;
 }
 
-async function partOne() {
+async function partOne():Promise<Matrix<Matrix<string>>> {
   const input = splitArray(await getInput(), '');
   const images:Image[] = [];
 
@@ -146,7 +149,6 @@ async function partOne() {
   const imagesLeft = new Set(images.map(x => x.id));
 
   let m = new Map<string, Image>();
-  //let m = new Matrix();
   while (imagesLeft.size > 0) {
     console.log(`${imagesLeft.size} images to go`)
     // If matrix length === 0, do something
@@ -164,28 +166,29 @@ async function partOne() {
       const imagesLeftArr = Array.from(imagesLeft);
       for (let i = 0; i < imagesLeftArr.length; i++) {
         const img = images.find(x => x.id === imagesLeftArr[i]);
-        if (img) {
-          const validPositions:Variant[] = [];
+        if (!img) { 
+          continue;
+        }
+        const validPositions:Variant[] = [];
 
-          possible.forEach(p => {
-            const allVariants = getVariations(img.data);
-            return allVariants.forEach(imgVariant => {
-              if(matches(imgVariant, p, m)) {
-                // This shouldnt be necessary
-                if(!validPositions.find(x => toKey(x.position) === toKey(p) && x.img.id === img.id)) {
-                  validPositions.push({ position: p, img: {data: imgVariant, id: img.id}});
-                } 
-              }
-            });
+        possible.forEach(p => {
+          const allVariants = getVariations(img.data);
+          return allVariants.forEach(imgVariant => {
             // Does imgVariant fit in pos p in matrix m?
+            if(matches(imgVariant, p, m)) {
+              // This shouldnt be necessary
+              if(!validPositions.find(x => toKey(x.position) === toKey(p) && x.img.id === img.id)) {
+                validPositions.push({ position: p, img: {data: imgVariant, id: img.id}});
+              } 
+            }
           });
-          if (validPositions.length === 1) {
-            imagesLeft.delete(img.id);
-            m.set(toKey(validPositions[0].position), validPositions[0].img);
-            break;
-          } else if (validPositions.length > 1) {
-            console.log(validPositions.map(x => x.img.data.rows[0][0]))
-          }
+        });
+        if (validPositions.length === 1) {
+          imagesLeft.delete(img.id);
+          m.set(toKey(validPositions[0].position), validPositions[0].img);
+          break;
+        } else if (validPositions.length > 1) {
+          console.log(validPositions.map(x => x.img.data.rows[0][0]))
         }
       }
       
@@ -193,13 +196,8 @@ async function partOne() {
   }
 
   //Get corners
-  const min = [...m.keys()].map(k => fromKey(k)).reduce((prev, curr) => {
-    return { x: Math.min(prev.x, curr.x), y: Math.min(prev.y, curr.y) }
-  }, {x: 100, y: 100});
-
-  const max = [...m.keys()].map(k => fromKey(k)).reduce((prev, curr) => {
-    return { x: Math.max(prev.x, curr.x), y: Math.max(prev.y, curr.y) }
-  }, {x: -100, y: -100});
+  const min = minPosition([...m.keys()].map(k => fromKey(k)));
+  const max = maxPosition([...m.keys()].map(k => fromKey(k)));
 
   let corners = [
     { x: min.x, y: min.y },
@@ -213,11 +211,68 @@ async function partOne() {
   const a = new Matrix();
   [...m.keys()].forEach(k => {
     const p = fromKey(k);
-    a.set(sumPositions(p, {x:5, y: 5}), m.get(k)?.id);
+    a.set(sumPositions(p, {x: -min.x, y: -min.y}), m.get(k)?.data);
   });
-  console.log(a.draw())
+  return a;
 }
 
-partOne();
+function findSeaMonster(m:Matrix<string>):Position[] {
+  const maxP = maxPosition(SEA_MONSTER_PATTERN);
 
-const m = new Matrix([[1,2,3], [4,5,6], [7,8,9]]);
+  let hits:Position[] = [];
+  m.asArray().forEach((p) => {
+    if (m.rows[0].length - p.x < maxP.x || m.rows.length - p.y < maxP.y) {
+      return;
+    }
+    const hit = SEA_MONSTER_PATTERN.map(s => sumPositions(p, s)).every(x => m.get(x) === '#');
+    if (hit) {
+      // Replace
+      hits.push(p);
+    }
+  });
+  return hits;
+}
+
+async function partTwo() {
+  const matrix = await partOne();
+  // Pad matrixes
+  matrix.asArray().forEach((p:Position) => {
+    const data = matrix.get(p);
+    if (!data) {
+      return;
+    }
+    matrix.set(p, data.trim());
+  });
+
+  // Draw large matrix
+  const rows:string[][] = [];
+  matrix.asArray().forEach((p:Position) => {
+    let m = matrix.get(p);
+    if (m !== undefined) {
+      const start = m.rows.length; 
+      m.rows.forEach((r, i) => {
+        const rowIndex = i + p.y * start;
+        if (!rows[rowIndex]) {
+          rows[rowIndex] = [];
+        }
+        rows[rowIndex].push(...r);
+      });
+    }
+  });
+  const largeMatrix = new Matrix<string>(rows).flipVertically();;
+
+  const variation = getVariations(largeMatrix).find(v => {
+    const monsters = findSeaMonster(v);
+    return monsters.length > 0;
+  });
+  if (variation) {
+    const numOfSeaMonsters = findSeaMonster(variation).length;
+    console.log(`Found ${numOfSeaMonsters} monsters`);
+    console.log(largeMatrix.values().filter(x => x === '#').length - numOfSeaMonsters * SEA_MONSTER_PATTERN.length);
+  }
+}
+
+partTwo()
+
+const m = new Matrix([[1,2,3], [4,5,6], [7,8,9]]).crop({x:0, y:0}, {x:2, y:2});
+

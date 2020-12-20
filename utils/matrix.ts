@@ -12,10 +12,10 @@ const DIRECTIONS: Position[] =[
   { x: -1, y: -1 }, // NW
 ];
 
-export class Matrix {
-  private _matrix: any[][];
+export class Matrix<T = any> {
+  private _matrix: T[][];
 
-  constructor(matrix: any[][] = []) {
+  constructor(matrix: T[][] = []) {
     this._matrix = matrix;
   }
 
@@ -33,15 +33,15 @@ export class Matrix {
       && p.y <= this._matrix.length;
   }
 
-  get rows(): any[][] {
+  get rows(): T[][] {
     return this._matrix;
   }
 
-  set(pos: Position, value: any) {
+  set(pos: Position, value: T) {
     this._getOrSetRow(pos.y)[pos.x] = value;
   }
 
-  get(pos: Position): any {
+  get(pos: Position): T | undefined {
     if (!this._isValidPosition(pos) || this._matrix[pos.y] === undefined) {
       return undefined;
     }
@@ -49,10 +49,10 @@ export class Matrix {
   }
 
   draw(): string {
-    return this._matrix.map(x => x.map(y => y === undefined ? '' : y).join(' ')).join('\n');
+    return this._matrix.map(x => x.map(y => y === undefined ? '' : y).join('')).join('\n');
   }
 
-  hasValue(value: any): boolean {
+  hasValue(value: T): boolean {
     return !!this.values().find(x => x === value);
   }
 
@@ -71,7 +71,7 @@ export class Matrix {
     return [...this.iterator()];
   }
 
-  values(): any[] {
+  values(): (T | undefined)[] {
     return this.asArray().map((p:Position) => this.get(p));
   }
 
@@ -83,15 +83,15 @@ export class Matrix {
     return DIRECTIONS.map(d => sum(p, d));
   }
 
-  adjacentValues(p: Position): any[] {
+  adjacentValues(p: Position): (T | undefined)[] {
     return this.adjacentPositions(p).map(p => this.get(p));
   }
 
-  equals(m: Matrix): boolean {
+  equals(m: Matrix<T>): boolean {
     return JSON.stringify(this.rows) === JSON.stringify(m.rows);
   }
 
-  visibleValues(pos: Position, predicate: (x: any) => boolean): any[] {
+  visibleValues(pos: Position, predicate: (x: any) => boolean): T[] {
     //Walk in each direction, until unvalid pos
     return DIRECTIONS.reduce((acc: any[], d) => {
       let newPos = sum(pos, d);
@@ -128,11 +128,23 @@ export class Matrix {
    return a.flipHorizontally();
   }
 
-  getRow(i:number):any[] {
+  getRow(i:number):T[] {
     return this.rows[i];
   }
 
-  getCol(i:number):any[] {
+  getCol(i:number):T[] {
     return this.rows.map(r => r[i]);
+  }
+
+  crop(from:Position, to:Position) {
+    return new Matrix(this.rows.slice(from.y, to.y + 1).map(r => r.slice(from.x, to.x + 1)));
+  }
+
+  trim() {
+    return this.crop({x:1, y:1}, {y: this.rows.length - 2, x: this.rows[0].length - 2});
+  }
+
+  toString() {
+    return this.draw();
   }
 }
