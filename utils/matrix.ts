@@ -33,7 +33,7 @@ export class Matrix {
       && p.y <= this._matrix.length;
   }
 
-  get rows(): any[] {
+  get rows(): any[][] {
     return this._matrix;
   }
 
@@ -79,8 +79,12 @@ export class Matrix {
     return new Matrix(JSON.parse(JSON.stringify(this._matrix)));
   }
 
+  adjacentPositions(p: Position): Position[] {
+    return DIRECTIONS.map(d => sum(p, d));
+  }
+
   adjacentValues(p: Position): any[] {
-    return DIRECTIONS.map(d => sum(p, d)).map(p => this.get(p));
+    return this.adjacentPositions(p).map(p => this.get(p));
   }
 
   equals(m: Matrix): boolean {
@@ -100,5 +104,35 @@ export class Matrix {
       }
       return acc;
     }, []);
+  }
+
+  flipVertically(): Matrix {
+    const clone = this.clone();
+    clone.rows.reverse();
+    return clone;
+  }
+
+  flipHorizontally(): Matrix {
+    const clone = this.clone();
+    clone.rows.forEach(r => r.reverse());
+    return clone;
+  }
+
+  rotate(): Matrix {
+   const a = new Matrix();
+   for (let y = 0; y < this.rows.length; y++) {
+    for (let x = 0; x < this.rows[y].length; x++) {
+      a.set({x: y, y: x}, this.get({x, y}));
+    }
+   }
+   return a.flipHorizontally();
+  }
+
+  getRow(i:number):any[] {
+    return this.rows[i];
+  }
+
+  getCol(i:number):any[] {
+    return this.rows.map(r => r[i]);
   }
 }
