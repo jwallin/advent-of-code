@@ -46,10 +46,8 @@ export function splitArray<T>(input:T[], splitter:T):T[][] {
   return res;
 }
 
-export const maxPosition = (input:Position[]):Position => input.reduce((prev, curr) => {
-  return { x: Math.max(prev.x, curr.x), y: Math.max(prev.y, curr.y) }
-});
+export const maxPosition = (input:Position[]):Position => input.reduce((prev, curr) => ({ x: Math.max(prev.x, curr.x), y: Math.max(prev.y, curr.y) }));
+export const minPosition = (input:Position[]):Position => input.reduce((prev, curr) => ({ x: Math.min(prev.x, curr.x), y: Math.min(prev.y, curr.y) }));
 
-export const minPosition = (input:Position[]):Position => input.reduce((prev, curr) => {
-  return { x: Math.min(prev.x, curr.x), y: Math.min(prev.y, curr.y) }
-});
+export const arrayMatch = (a: any[], b: any[]): boolean => a.length === b.length && a.every((x,i) => b[i] === x);
+export const intersection = (...a:any[][]):any[] => a.reduce((a, b) => a.filter(x => b.includes(x)))
