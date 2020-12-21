@@ -1,4 +1,4 @@
-import { getInput, splitArray } from '../utils';
+import { getInput, splitArray, range } from '../utils';
 
 type Rule = string[];
 
@@ -14,14 +14,15 @@ type Input = {
 function createRexStr(input: string, rules: RuleObj):string {
   const g = rules[input];
   if (rules[input]) {
-    const options = g.map((o) => {
-      return o.split(' ').map(c => {
+    const options:string[] = g.map((o) => {
+      const chars = o.split(' ');
+      return chars.map((c,i) => {
         return createRexStr(c, rules);
       }).join('');
     });
     if (options.length === 1) {
       return options[0];
-    } 
+    }
     return `(${options.join('|')})`;
   }
   return input;
@@ -58,4 +59,16 @@ async function partOne() {
   console.log(messages.filter(m => m.match(reg)).length);
 }
 
-partOne();
+async function partTwo() {
+  const input = await (await getInput());
+  const { rules, messages } = parseInput(input);
+  rules['8'] = ['42 +'];
+  rules['11'] = range(10).map(x => `${[...Array(x + 1)].map(y => '42').join(' ')} ${[...Array(x + 1)].map(y => ['31']).join(' ')}`);
+  const r = createRexStr('0', rules);
+  const reg = new RegExp(`^${r}$`);
+  console.log(r)
+  console.log(messages.filter(m => m.match(reg)));
+  console.log(messages.filter(m => m.match(reg)).length);
+}
+
+partTwo();
