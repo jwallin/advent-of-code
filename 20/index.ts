@@ -1,4 +1,4 @@
-import { getInput, Position, toChars, sumPositions, multiply, allEnumNames, splitArray, maxPosition, minPosition } from '../utils';
+import { getInput, Position, toChars, sumPositions, multiply, allEnumNames, splitArray, maxPosition, minPosition, arrayMatch} from '../utils';
 import { Matrix } from '../utils/matrix';
 
 type Image = {
@@ -74,10 +74,6 @@ function getVariations(m:Matrix):Matrix[] {
 
 function adjacentPositions(p: Position): Position[] {
   return Object.values(DIRECTIONS).map(d => sumPositions(p, d));
-}
-
-function arrayMatch(a: any[], b: any[]) {
-  return a.length === b.length && a.every((x,i) => b[i] === x);
 }
 
 function toKey(p:Position):string {
