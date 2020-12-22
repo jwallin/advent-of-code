@@ -4,7 +4,7 @@ class Player {
   private _name: string;
   private _cards: number[];
 
-  constructor(name:string, cards:number[]) {
+  constructor(name: string, cards: number[]) {
     this._name = name;
     this._cards = cards;
   }
@@ -18,46 +18,32 @@ class Player {
   }
 
   draw(): number {
-    return this._cards.shift() || -1;
+    return this.deck.shift() || -1;
   }
 
   hasCard(): boolean {
-    return this._cards.length > 0;
+    return this.deck.length > 0;
   }
 
-  winsCards(...cards:number[]) {
-    this._cards.push(...cards);
+  winsCards(...cards: number[]) {
+    this.deck.push(...cards);
   }
 
   calculateScore(): number {
     const numOfCards = this.deck.length;
-    return range(numOfCards).reverse().reduce((prev, k, i) => prev + this.deck[i] * (k+1), 0)
+    return range(numOfCards).reverse().reduce((prev, k, i) => prev + this.deck[i] * (k + 1), 0);
   }
   
   cardsLeft(): number {
     return this.deck.length;
   }
-
-}
-
-async function partOne() {
-  const input = splitArray(await getInput(), '');
-  const [player1, player2] = input.map(p => {
-    const name = p.shift() || '';
-    return new Player(name, p.map(Number))
-  });
-  
-  playGame(player1, player2)
-
-  console.log(`Player 1 score: ${player1.calculateScore()}`);
-  console.log(`Player 2 score: ${player2.calculateScore()}`);
 }
 
 function toKey(...input:number[][]):string {
   return input.map(x => x.join(',')).join(';');
 }
 
-function playGame(p1:Player, p2: Player, recursiveRule:boolean = false):Player {
+function playGame(p1:Player, p2: Player, recursiveRule:boolean = false): Player {
   const memo:Set<string> = new Set();
   
   while (p1.hasCard() && p2.hasCard()) {
@@ -88,16 +74,24 @@ function playGame(p1:Player, p2: Player, recursiveRule:boolean = false):Player {
   return (p1.calculateScore() > p2.calculateScore()) ? p1 : p2;
 }
 
-
-async function partTwo() {
+async function run(recursive = false) {
   const input = splitArray(await getInput(), '');
   const [player1, player2] = input.map(p => {
     const name = p.shift() || '';
     return new Player(name, p.map(Number));
   });
-  playGame(player1, player2, true);
+  
+  playGame(player1, player2, recursive)
+
   console.log(`Player 1 score: ${player1.calculateScore()}`);
   console.log(`Player 2 score: ${player2.calculateScore()}`);
 }
 
-partTwo();
+(async () => {
+  console.log('Part one:');
+  await run(false);
+
+  console.log('');
+  console.log('Part two:');
+  await run(true);
+})();
