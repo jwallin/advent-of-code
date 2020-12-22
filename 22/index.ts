@@ -46,23 +46,9 @@ async function partOne() {
     const name = p.shift() || '';
     return new Player(name, p.map(Number))
   });
+  
+  playGame(player1, player2)
 
-  while (player1.hasCard() && player2.hasCard()) {
-    const p1card = player1.draw();
-    const p2card = player2.draw();
-
-    //[player1, player2].forEach(p => console.log(`${p.name} deck: ${p.deck.join(', ')}`));
-    //console.log('Player 1 plays', p1card);
-    //console.log('Player 2 plays', p2card);
-    if (p1card > p2card) {
-      player1.winsCards(p1card, p2card);
-      //console.log('Player 1 wins the round');
-    } else {
-      player2.winsCards(p2card, p1card);
-      //console.log('Player 2 wins the round');
-    }
-  }
-  console.log('============');
   console.log(`Player 1 score: ${player1.calculateScore()}`);
   console.log(`Player 2 score: ${player2.calculateScore()}`);
 }
@@ -71,7 +57,7 @@ function toKey(...input:number[][]):string {
   return input.map(x => x.join(',')).join(';');
 }
 
-function playGame(p1:Player, p2: Player, id:number = 1):Player {
+function playGame(p1:Player, p2: Player, recursiveRule:boolean = false):Player {
   const memo:Set<string> = new Set();
   
   while (p1.hasCard() && p2.hasCard()) {
@@ -84,8 +70,8 @@ function playGame(p1:Player, p2: Player, id:number = 1):Player {
     const p1card = p1.draw();
     const p2card = p2.draw();
 
-    if (p1.cardsLeft() >= p1card && p2.cardsLeft() >= p2card) {
-      const winner = playGame(new Player(p1.name, p1.deck.slice(0, p1card)), new Player(p2.name, p2.deck.slice(0, p2card)), id++);
+    if (recursiveRule && p1.cardsLeft() >= p1card && p2.cardsLeft() >= p2card) {
+      const winner = playGame(new Player(p1.name, p1.deck.slice(0, p1card)), new Player(p2.name, p2.deck.slice(0, p2card)), true);
       if (winner.name === p1.name) {
         p1.winsCards(p1card, p2card);
       } else {
@@ -107,11 +93,11 @@ async function partTwo() {
   const input = splitArray(await getInput(), '');
   const [player1, player2] = input.map(p => {
     const name = p.shift() || '';
-    return new Player(name, p.map(Number))
+    return new Player(name, p.map(Number));
   });
-  playGame(player1, player2);
+  playGame(player1, player2, true);
   console.log(`Player 1 score: ${player1.calculateScore()}`);
   console.log(`Player 2 score: ${player2.calculateScore()}`);
 }
 
-partTwo()
+partTwo();
