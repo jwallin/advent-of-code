@@ -4,8 +4,8 @@ class Player {
   private _name: string;
   private _cards: number[];
 
-  constructor(name: string, cards: number[]) {
-    this._name = name;
+  constructor(name: string | undefined, cards: number[]) {
+    this._name = name || '';
     this._cards = cards;
   }
 
@@ -43,13 +43,13 @@ function toKey(...input:number[][]):string {
   return input.map(x => x.join(',')).join(';');
 }
 
-function playGame(p1:Player, p2: Player, recursiveRule:boolean = false): Player {
+function playGame(p1:Player, p2: Player, recursiveRule:boolean = false): string {
   const memo:Set<string> = new Set();
   
   while (p1.hasCard() && p2.hasCard()) {
     const key = toKey(p1.deck, p2.deck);
     if (memo.has(key)) {
-      return p1;
+      return p1.name;
     };
     memo.add(key);
 
@@ -58,7 +58,7 @@ function playGame(p1:Player, p2: Player, recursiveRule:boolean = false): Player 
 
     if (recursiveRule && p1.cardsLeft() >= p1card && p2.cardsLeft() >= p2card) {
       const winner = playGame(new Player(p1.name, p1.deck.slice(0, p1card)), new Player(p2.name, p2.deck.slice(0, p2card)), true);
-      if (winner.name === p1.name) {
+      if (winner === p1.name) {
         p1.winsCards(p1card, p2card);
       } else {
         p2.winsCards(p2card, p1card);
@@ -71,14 +71,13 @@ function playGame(p1:Player, p2: Player, recursiveRule:boolean = false): Player 
       }
     }  
   }
-  return (p1.calculateScore() > p2.calculateScore()) ? p1 : p2;
+  return (p1.calculateScore() > p2.calculateScore()) ? p1.name : p2.name;
 }
 
 async function run(recursive = false) {
   const input = splitArray(await getInput(), '');
   const [player1, player2] = input.map(p => {
-    const name = p.shift() || '';
-    return new Player(name, p.map(Number));
+    return new Player(p.shift(), p.map(Number));
   });
   
   playGame(player1, player2, recursive)
