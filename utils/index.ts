@@ -1,13 +1,10 @@
 import { lines } from './lines';
-import { combinations } from './combinations';
-
-export { combinations };
 
 export const toChars = (value:string): string[] => [...value];
 export const countDigits = (input: number): number => toChars(String(input)).length;
 export const isValidYear = (input: number, min: number, max: number): boolean => countDigits(input) === 4 && input >= min && input <= max;
 export const hasAllValuesFrom = (input:any[], target:any[]): boolean => target.every((v:any) => input.includes(v));
-export const range = (max:number, min:number = 0):number[] => [...Array(max - min).keys()].map(k => k + min);
+export const range = (length:number, min:number = 0):number[] => [...Array(length - min).keys()].map(k => k + min);
 export const unique = <U>(input: U[]): U[] => Array.from(new Set(input));
 export const sum = (a: number, b: number): number => a + b;
 export const subtract = (a: number, b: number): number => a - b;
@@ -46,3 +43,18 @@ export const arrayMatch = (a: any[], b: any[]): boolean => a.length === b.length
 export const intersection = (...a:any[][]):any[] => a.reduce((a, b) => a.filter(x => b.includes(x)));
 
 export const cartesian = (...a:any[]) => a.reduce((a:any[], b:any[]):any[] => a.flatMap((d:any) => b.map((e:any) => [d, e].flat())));
+
+export function* combinations(array: number[], k:number, start:number = 0): Generator<number[]> {
+  if (k === 1 || start == array.length) {
+    for(let i = start; i < array.length; i++) {
+      yield [array[i]];
+    }
+  } else {
+    for (let i = start; i < array.length; i++) {
+      const permutations = combinations(array, k - 1, i + 1);
+      for(const x of permutations) {
+        yield [array[i], ...x];  
+      }
+    }
+  }
+}
