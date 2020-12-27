@@ -1,6 +1,7 @@
-import { Position } from './types';
-
-export { Position };
+export type Position = {
+  x: number,
+  y: number
+};
 
 export const max = (input:Position[]):Position => input.reduce((prev, curr) => ({ x: Math.max(prev.x, curr.x), y: Math.max(prev.y, curr.y) }));
 export const min = (input:Position[]):Position => input.reduce((prev, curr) => ({ x: Math.min(prev.x, curr.x), y: Math.min(prev.y, curr.y) }));

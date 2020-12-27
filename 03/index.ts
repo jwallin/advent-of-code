@@ -1,20 +1,19 @@
-import { getInput, Direction, toChars } from '../utils';
+import { getInput, toChars } from '../utils';
 import { Matrix } from '../utils/matrix';
+import { Position as Direction, sum } from '../utils/position';
 
-async function getMatrix():Promise<Matrix> {
+async function getMatrix(): Promise<Matrix> {
   return new Matrix((await getInput()).map(toChars));
 }
 
-function traverseTrees(matrix: Matrix, direction:Direction):number {
-  let x = 0;
-  let y = 0;
+function traverseTrees(matrix: Matrix, direction: Direction):number {
+  let pos = { x: 0, y: 0 };
   let trees = 0;
-  while (y < matrix.rows.length) {
-    if (matrix.get({x: x % matrix.rows[y].length, y}) === '#') {
+  while (pos.y < matrix.rows.length) {
+    if (matrix.get({x: pos.x % matrix.rows[pos.y].length, y: pos.y}) === '#') {
       trees++;
     }
-    x += direction.x;
-    y += direction.y;
+    pos = sum(pos, direction);
   }
   return trees;
 }
@@ -27,14 +26,14 @@ async function partOne() {
 
 async function partTwo() {
   const matrix = await getMatrix(); 
-  const directions:Direction[] = [
+  const directions: Direction[] = [
     {x: 1, y: 1}, 
     {x: 3, y: 1}, 
     {x: 5, y: 1}, 
     {x: 7, y: 1}, 
     {x: 1, y: 2}
   ];
-  let totalTrees = directions.reduce<number>((prev:number, curr:Direction) => prev * traverseTrees(matrix, curr), 1);
+  let totalTrees = directions.reduce<number>((prev: number, curr: Direction) => prev * traverseTrees(matrix, curr), 1);
   console.log(totalTrees)
 }
 

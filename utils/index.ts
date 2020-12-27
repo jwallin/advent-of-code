@@ -1,8 +1,6 @@
 import { lines } from './lines';
-import { Direction } from './types';
 import { combinations } from './combinations';
 
-export { Direction };
 export { combinations };
 
 export const toChars = (value:string): string[] => [...value];
