@@ -1,4 +1,5 @@
-import { getInput, Position, sumPositions, minPosition, maxPosition } from '../utils';
+import { getInput } from '../utils';
+import { Position, sum, min, max, fromKey, toKey } from '../utils/position';
 
 const DIRECTIONS = ['e', 'se', 'sw', 'w', 'nw', 'ne'];
 
@@ -10,22 +11,22 @@ function getNextPos(dir: string, current: Position):Position {
   // Odd-row matrix layout
   switch (dir) {
     case 'e': 
-      return sumPositions({ x: 1, y: 0 }, current);
+      return sum({ x: 1, y: 0 }, current);
 
     case 'w':
-      return sumPositions({ x: -1, y: 0 }, current);
+      return sum({ x: -1, y: 0 }, current);
 
     case 'nw':
-      return sumPositions({ x: isOdd(current.y) ? 0 : -1, y: -1 }, current);
+      return sum({ x: isOdd(current.y) ? 0 : -1, y: -1 }, current);
       
     case 'sw':
-      return sumPositions({ x: isOdd(current.y) ? 0 : -1, y: 1 }, current);
+      return sum({ x: isOdd(current.y) ? 0 : -1, y: 1 }, current);
       
     case 'ne': 
-      return sumPositions({ x: isOdd(current.y) ? 1 : 0, y: -1 }, current);
+      return sum({ x: isOdd(current.y) ? 1 : 0, y: -1 }, current);
 
     case 'se':
-      return sumPositions({ x: isOdd(current.y) ? 1 : 0, y: 1 }, current);
+      return sum({ x: isOdd(current.y) ? 1 : 0, y: 1 }, current);
   }
   throw new Error(`Couldnt find direction ${dir}`);
 }
@@ -42,14 +43,6 @@ function getTiles(input:string[]):string[][] {
   });
 }
 
-function toKey(p:Position):string {
-  return JSON.stringify(p);
-}
-
-function fromKey(str:string):Position {
-  return JSON.parse(str);
-}
-
 function walkTiles(input: string[]):Position {
   return input.reduce((acc, dir) => getNextPos(dir, acc), { x: 0, y: 0 });
 }
@@ -61,12 +54,12 @@ function getNeighbors(p:Position):Position[] {
 type Floor = Map<string, boolean>;
 
 function flipFloor(floor: Floor): Floor {
-  const min = minPosition([...floor.keys()].map(k => fromKey(k)));
-  const max = maxPosition([...floor.keys()].map(k => fromKey(k)));
+  const minPos = min([...floor.keys()].map(k => fromKey(k)));
+  const maxPos = max([...floor.keys()].map(k => fromKey(k)));
 
   // Extrapolate floor
-  for (let x = min.x - 1; x <= max.x + 1; x++) {
-    for (let y = min.y - 1; y <= max.y + 1; y++) {
+  for (let x = minPos.x - 1; x <= maxPos.x + 1; x++) {
+    for (let y = minPos.y - 1; y <= maxPos.y + 1; y++) {
       const key = toKey({x, y});
       if (!floor.has(key)) {
         floor.set(key, false);

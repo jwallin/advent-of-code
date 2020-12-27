@@ -1,15 +1,13 @@
 import { lines } from './lines';
-import { Direction, Position } from './types';
 import { combinations } from './combinations';
 
-export { Direction, Position };
 export { combinations };
 
 export const toChars = (value:string): string[] => [...value];
 export const countDigits = (input: number): number => toChars(String(input)).length;
 export const isValidYear = (input: number, min: number, max: number): boolean => countDigits(input) === 4 && input >= min && input <= max;
 export const hasAllValuesFrom = (input:any[], target:any[]): boolean => target.every((v:any) => input.includes(v));
-export const range = (max:number):number[] => [...Array(max).keys()];
+export const range = (max:number, min:number = 0):number[] => [...Array(max - min).keys()].map(k => k + min);
 export const unique = <U>(input: U[]): U[] => Array.from(new Set(input));
 export const sum = (a: number, b: number): number => a + b;
 export const subtract = (a: number, b: number): number => a - b;
@@ -18,8 +16,6 @@ export const intify = (input: string[]): (string | number)[] => input.map(s => i
 
 export const pairs = (array: number[]): number[][] => Array.from(combinations(array, 2));
 export const triplets = (array:number[]): number[][] => Array.from(combinations(array, 3));
-
-export const sumPositions = (p1: Position, p2: Position): Position => ({ x: p1.x + p2.x, y: p1.y + p2.y });
 
 export const getInput = async (filename:string = 'input.txt'):Promise<string[]> => await lines(filename);
 
@@ -46,8 +42,7 @@ export function splitArray<T>(input:T[], splitter:T):T[][] {
   return res;
 }
 
-export const maxPosition = (input:Position[]):Position => input.reduce((prev, curr) => ({ x: Math.max(prev.x, curr.x), y: Math.max(prev.y, curr.y) }));
-export const minPosition = (input:Position[]):Position => input.reduce((prev, curr) => ({ x: Math.min(prev.x, curr.x), y: Math.min(prev.y, curr.y) }));
-
 export const arrayMatch = (a: any[], b: any[]): boolean => a.length === b.length && a.every((x,i) => b[i] === x);
-export const intersection = (...a:any[][]):any[] => a.reduce((a, b) => a.filter(x => b.includes(x)))
+export const intersection = (...a:any[][]):any[] => a.reduce((a, b) => a.filter(x => b.includes(x)));
+
+export const cartesian = (...a:any[]) => a.reduce((a:any[], b:any[]):any[] => a.flatMap((d:any) => b.map((e:any) => [d, e].flat())));

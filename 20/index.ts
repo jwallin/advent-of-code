@@ -1,5 +1,6 @@
-import { getInput, Position, toChars, sumPositions, multiply, allEnumNames, splitArray, maxPosition, minPosition, arrayMatch} from '../utils';
+import { getInput, toChars, multiply, allEnumNames, splitArray, arrayMatch} from '../utils';
 import { Matrix } from '../utils/matrix';
+import { Position, min, max, sum, toKey, fromKey } from '../utils/position';
 
 type Image = {
   id: string,
@@ -22,7 +23,7 @@ type DirectionMap = {
   [key:string]: Position
 };
 
-const DIRECTIONS:DirectionMap = {
+const DIRECTIONS: DirectionMap = {
   N: { x: 0, y: -1 },  // N
   E: { x: 1, y: 0 },   // E
   S: { x: 0, y: 1 },   // S
@@ -73,15 +74,7 @@ function getVariations(m:Matrix):Matrix[] {
 }
 
 function adjacentPositions(p: Position): Position[] {
-  return Object.values(DIRECTIONS).map(d => sumPositions(p, d));
-}
-
-function toKey(p:Position):string {
-  return JSON.stringify(p);
-}
-
-function fromKey(str:string):Position {
-  return JSON.parse(str);
+  return Object.values(DIRECTIONS).map(d => sum(p, d));
 }
 
 function matches(img:Matrix, p:Position, matrix:Map<string, Image>):boolean {
@@ -180,14 +173,14 @@ async function partOne():Promise<Matrix<Matrix<string>>> {
   }
 
   //Get corners
-  const min = minPosition([...m.keys()].map(k => fromKey(k)));
-  const max = maxPosition([...m.keys()].map(k => fromKey(k)));
+  const minPos = min([...m.keys()].map(k => fromKey(k)));
+  const maxPos = max([...m.keys()].map(k => fromKey(k)));
 
   let corners = [
-    { x: min.x, y: min.y },
-    { x: max.x, y: min.y },
-    { x: min.x, y: max.y },
-    { x: max.x, y: max.y }
+    { x: minPos.x, y: minPos.y },
+    { x: maxPos.x, y: minPos.y },
+    { x: minPos.x, y: maxPos.y },
+    { x: maxPos.x, y: maxPos.y }
   ];
 
   console.log(corners.map(c => Number(m.get(toKey(c))?.id)).reduce(multiply));
@@ -195,13 +188,13 @@ async function partOne():Promise<Matrix<Matrix<string>>> {
   const a = new Matrix();
   [...m.keys()].forEach(k => {
     const p = fromKey(k);
-    a.set(sumPositions(p, {x: -min.x, y: -min.y}), m.get(k)?.data);
+    a.set(sum(p, {x: -minPos.x, y: -minPos.y}), m.get(k)?.data);
   });
   return a;
 }
 
 function findSeaMonster(m:Matrix<string>):Position[] {
-  const maxP = maxPosition(SEA_MONSTER_PATTERN);
+  const maxP = max(SEA_MONSTER_PATTERN);
 
   let hits:Position[] = [];
   const allPositions = m.asArray();
@@ -212,7 +205,7 @@ function findSeaMonster(m:Matrix<string>):Position[] {
     if (m.rows[0].length - p.x < maxP.x || m.rows.length - p.y < maxP.y) {
       continue;
     }
-    const hit = SEA_MONSTER_PATTERN.map(s => sumPositions(p, s)).every(x => m.get(x) === '#');
+    const hit = SEA_MONSTER_PATTERN.map(s => sum(p, s)).every(x => m.get(x) === '#');
     if (hit) {
       hits.push(p);
     }

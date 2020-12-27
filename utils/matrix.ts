@@ -1,5 +1,4 @@
-import { Position } from './types';
-import { sumPositions as sum } from './index';
+import { Position, sum } from './position';
 
 const DIRECTIONS: Position[] =[
   { x: 0, y: -1 },  // N
