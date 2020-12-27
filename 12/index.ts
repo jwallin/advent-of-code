@@ -1,5 +1,5 @@
 import { getInput } from '../utils';
-import { Position } from '../utils/types';
+import { Position, sum } from '../utils/position';
 
 const DIRECTION_FORWARD = 'F';
 
@@ -39,10 +39,7 @@ function toInstruction(input: string): Instruction {
 }
 
 function moveInDirection(pos: Position, dir: Position, steps: number): Position {
-  return {
-    x: pos.x + dir.x * steps,
-    y: pos.y + dir.y * steps
-  };
+  return sum(pos, {x: dir.x * steps, y: dir.y * steps});
 }
 
 function rotatePosition(pos: Position, dir:number, angle: number): Position {
@@ -89,7 +86,6 @@ async function partOne() {
   const shipPos = applyInstructions(instructions, currentPos, direction, false);
   console.log(Math.abs(shipPos.x) + Math.abs(shipPos.y));
 }
-
 
 async function partTwo() {
   const instructions = (await getInput()).map(x => toInstruction(x));

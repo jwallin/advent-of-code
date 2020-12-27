@@ -1,4 +1,5 @@
-import { getInput, Position, toChars } from '../utils';
+import { getInput, toChars } from '../utils';
+import { Position } from '../utils/position';
 import { Matrix } from '../utils/matrix';
 
 const SEAT_OCCUPIED = '#';

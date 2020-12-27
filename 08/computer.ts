@@ -1,4 +1,3 @@
-
 export type Instruction = {
   op: string,
   parameter: number,

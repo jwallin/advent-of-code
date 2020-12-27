@@ -17,7 +17,6 @@ function transform(subject: number, loopSize: number, toFind: number | undefined
   return v;
 }
 
-
 function partOne() {
   let cardPbk = 2084668;
   let doorPbk = 3704642;
