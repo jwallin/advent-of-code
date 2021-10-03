@@ -1,4 +1,4 @@
-import { getInput, pairs, sum } from '../utils';
+import { getInput, pairs, sum } from '../../utils';
 
 function findInvalidNumber(input: number[], preambleLength: number): number | undefined {
   const allValues = input.slice(); // Copy array to avoid mutation of parameter

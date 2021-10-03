@@ -1,4 +1,4 @@
-import { getInput } from '../utils';
+import { getInput } from '../../utils';
 import { Instruction, INSTRUCTIONS, Computer } from './computer';
 
 function getInstructions(input:string[]): Instruction[] {

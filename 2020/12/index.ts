@@ -1,5 +1,5 @@
-import { getInput } from '../utils';
-import { Position, sum } from '../utils/position';
+import { getInput } from '../../utils';
+import { Position, sum } from '../../utils/position';
 
 const DIRECTION_FORWARD = 'F';
 

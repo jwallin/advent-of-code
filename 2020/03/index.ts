@@ -1,6 +1,6 @@
-import { getInput, toChars } from '../utils';
-import { Matrix } from '../utils/matrix';
-import { Position as Direction, sum } from '../utils/position';
+import { getInput, toChars } from '../../utils';
+import { Matrix } from '../../utils/matrix';
+import { Position as Direction, sum } from '../../utils/position';
 
 async function getMatrix(): Promise<Matrix> {
   return new Matrix((await getInput()).map(toChars));

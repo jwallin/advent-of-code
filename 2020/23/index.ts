@@ -1,4 +1,4 @@
-import { range } from '../utils';
+import { range } from '../../utils';
 
 class Cup {
   private _value: number;

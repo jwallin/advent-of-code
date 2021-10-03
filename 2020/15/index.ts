@@ -1,4 +1,4 @@
-import { getInput } from '../utils';
+import { getInput } from '../../utils';
 
 async function playGame(rounds:number) {
   const startingNumbers:number[] = (await getInput())[0].split(',').map(Number);

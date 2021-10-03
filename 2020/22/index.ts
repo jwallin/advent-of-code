@@ -1,4 +1,4 @@
-import { getInput, splitArray, range } from '../utils';
+import { getInput, splitArray, range } from '../../utils';
 
 class Player {
   private _name: string;

@@ -1,4 +1,4 @@
-import { getInput, toChars, unique, nestedLoops } from '../utils';
+import { getInput, toChars, unique, nestedLoops } from '../../utils';
 
 const DIM_NAMES = ['x', 'y', 'z', 'w'];
 const NUM_CYCLES = 6;

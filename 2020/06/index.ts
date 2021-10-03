@@ -1,4 +1,4 @@
-import { getInput, toChars, unique, sum } from '../utils';
+import { getInput, toChars, unique, sum } from '../../utils';
 
 async function partOne() {
   const groups: string[] = (await getInput()).join(' ').split('  ');

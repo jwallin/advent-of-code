@@ -1,4 +1,4 @@
-import { getInput, unique, intersection } from '../utils';
+import { getInput, unique, intersection } from '../../utils';
 
 type Food = {
   ingredients: string[],

@@ -1,4 +1,4 @@
-import { getInput, unique } from '../utils';
+import { getInput, unique } from '../../utils';
 
 type BagContent = {
   quantity: number,

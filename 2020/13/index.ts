@@ -1,4 +1,4 @@
-import { getInput } from '../utils';
+import { getInput } from '../../utils';
 
 async function partOne() {
   const timetable = await getInput();

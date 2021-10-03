@@ -1,5 +1,5 @@
-import { toChars, getInput, range } from '../utils';
-import { Matrix } from '../utils/matrix';
+import { toChars, getInput, range } from '../../utils';
+import { Matrix } from '../../utils/matrix';
 
 const PLANE_LENGTH = 128;
 const PLANE_WIDTH = 8;

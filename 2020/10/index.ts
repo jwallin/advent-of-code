@@ -1,4 +1,4 @@
-import { getInput, subtract, sum } from '../utils';
+import { getInput, subtract, sum } from '../../utils';
 
 async function partOne() {
   const adapters: number[] = (await getInput()).map(Number).sort(subtract);

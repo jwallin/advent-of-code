@@ -1,4 +1,4 @@
-import { getInput, toChars, sum, prependZeros } from '../utils';
+import { getInput, toChars, sum, prependZeros } from '../../utils';
 
 enum InstructionType {
   Mask,

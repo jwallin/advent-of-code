@@ -1,4 +1,4 @@
-import { getInput, pairs, triplets } from '../utils';
+import { getInput, pairs, triplets } from '../../utils';
 
 async function partOne() {
   const numbers:number[] = (await getInput()).map(Number);

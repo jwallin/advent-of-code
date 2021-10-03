@@ -1,6 +1,6 @@
-import { getInput, toChars } from '../utils';
-import { Position } from '../utils/position';
-import { Matrix } from '../utils/matrix';
+import { getInput, toChars } from '../../utils';
+import { Position } from '../../utils/position';
+import { Matrix } from '../../utils/matrix';
 
 const SEAT_OCCUPIED = '#';
 const SEAT_EMPTY = 'L';

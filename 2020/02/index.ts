@@ -1,4 +1,4 @@
-import { getInput } from '../utils';
+import { getInput } from '../../utils';
 
 type PasswordRule = {
   positions: number[],

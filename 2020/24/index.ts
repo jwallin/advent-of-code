@@ -1,5 +1,5 @@
-import { getInput } from '../utils';
-import { Position, sum, min, max, fromKey, toKey } from '../utils/position';
+import { getInput } from '../../utils';
+import { Position, sum, min, max, fromKey, toKey } from '../../utils/position';
 
 const DIRECTIONS = ['e', 'se', 'sw', 'w', 'nw', 'ne'];
 

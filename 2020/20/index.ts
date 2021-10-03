@@ -1,6 +1,6 @@
-import { getInput, toChars, multiply, allEnumNames, splitArray, arrayMatch} from '../utils';
-import { Matrix } from '../utils/matrix';
-import { Position, min, max, sum, toKey, fromKey } from '../utils/position';
+import { getInput, toChars, multiply, allEnumNames, splitArray, arrayMatch} from '../../utils';
+import { Matrix } from '../../utils/matrix';
+import { Position, min, max, sum, toKey, fromKey } from '../../utils/position';
 
 type Image = {
   id: string,

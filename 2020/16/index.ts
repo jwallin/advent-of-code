@@ -1,4 +1,4 @@
-import { getInput, multiply, sum } from '../utils';
+import { getInput, multiply, sum } from '../../utils';
 
 type Range = {
   max: number,

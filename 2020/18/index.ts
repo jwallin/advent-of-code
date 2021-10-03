@@ -1,4 +1,4 @@
-import { getInput, sum } from '../utils';
+import { getInput, sum } from '../../utils';
 
 function findMatchingParenthesis(index: number, input: string[]): number {
   let open = 0;

@@ -1,4 +1,4 @@
-import { getInput, isValidYear, hasAllValuesFrom } from '../utils';
+import { getInput, isValidYear, hasAllValuesFrom } from '../../utils';
 
 type PassportValidator = (x: string) => boolean
 
