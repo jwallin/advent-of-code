@@ -12,30 +12,42 @@ function isOppositePolarity(a:string, b:string) {
   return a.toLowerCase() === b.toLowerCase() && a !== b;
 }
 
-async function partOne() {
-  const chars = (await getInput()).map(toChars)[0];
-  let currentWord = chars.join('');
-
+function react(chars:string[]) {
+  let currentLength = chars.length;
+  let start = 0;
   while (true) {
-    for (let i = 0; i < chars.length - 1; i++) {
+    for (let i = start; i < chars.length - 1; i++) {
       if (isOppositePolarity(chars[i], chars[i+1])) {
         //Remove char, exit
         chars.splice(i, 2);
+        start = Math.max(i - 3, 0);
         break;
       }
     }
     
-    if (currentWord === chars.join('')) {
+    if (currentLength === chars.length) {
       break;
-    }  
-    currentWord = chars.join('');
+    }
+    currentLength = chars.length;
   }
+  return chars;
+}
+
+async function partOne() {
+  const chars = (await getInput()).map(toChars)[0];
+  react(chars);
   console.log(chars.length);
 }
 
 async function partTwo() {
-  const input = (await getInput()).map(Number);
+  const chars = (await getInput()).map(toChars)[0];
+  const units = Array.from(new Set(chars.map(x => x.toUpperCase()))).sort();
+  const results = units.map(u => {
+    const filteredChars = chars.filter(c => c.toUpperCase() !== u);
+    return react(filteredChars).length;
+  });
+  console.log(Math.min(...results));
 }
   
 
-partOne();
+partTwo();
