@@ -4,7 +4,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "start": "cd ${INIT_CWD} && ts-node index.ts"
+    "start": "cd ${INIT_CWD} && ts-node index.ts", 
+    "gen": "sh gen.sh",
+    "gen2": "cp _template/* ${1}",
+    "g": "echo \"mkdir $f && cp _template/* $dir\""
   },
   "repository": {
     "type" : "git",
