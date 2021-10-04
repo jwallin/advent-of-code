@@ -1,4 +1,3 @@
-import { textChangeRangeIsUnchanged } from 'typescript';
 import { getInput, sum } from '../../utils';
 
 class Node {
@@ -29,6 +28,19 @@ class Node {
   sumOfMetadata():number {
     return this.children.reduce((acc, curr) => acc + curr.sumOfMetadata(), this.metadata.reduce(sum));
   }
+
+  getValue(): number {
+    if (this.children.length === 0) {
+      return this.metadata.reduce(sum)
+    }
+
+    return this.metadata.reduce((acc, curr) => {
+      if (this.children[curr - 1]) {
+        return acc + this.children[curr - 1].getValue();
+      }
+      return acc;
+    }, 0);
+  }
 }
 
 function popFirst<T>(arr: T[]): T {
@@ -42,8 +54,9 @@ async function partOne() {
 }
 
 async function partTwo() {
-  const input = (await getInput()).map(Number);
+  const input = (await getInput())[0].split(' ').map(Number);
+  const tree = new Node(input);
+  console.log(tree.getValue())
 }
-  
 
-partOne();
+partTwo();
