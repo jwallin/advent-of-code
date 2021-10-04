@@ -1,4 +1,5 @@
 import { getInput } from '../../utils';
+import { KeyVal } from '../../utils/types';
 
 type LogEntry = {
   time: string,
@@ -11,10 +12,6 @@ type LogDay = {
     asleep: boolean[]
   }
 }
-
-type KeyVal<T> = {
-  [key: string]: T
-};
 
 function parseLogEntry(input: String):LogEntry {
   const regex = /\[(.+)\]\s(.*)$/;
