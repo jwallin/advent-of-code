@@ -84,8 +84,7 @@ function parseInput(input: string) {
   return [players, maxMarble].map(Number)
 }
 
-async function partOne() {
-  const [numPlayers, maxMarble] = (await getInput()).map(parseInput)[0];
+function play(numPlayers: number, maxMarble: number): number {
   const players = new Array(numPlayers).fill(0);
   let currentMarble: LinkedList = new LinkedList(0);
   currentMarble.left = currentMarble;
@@ -101,15 +100,22 @@ async function partOne() {
       const toRight = toLeft.right;
       currentMarble = new LinkedList(i, toLeft, toRight);
     }
-    //console.log(currPlayer, currentMarble.toString())
   }
+  return Math.max(...players);
+}
 
-  console.log(Math.max(...players));
+async function partOne() {
+  const [numPlayers, maxMarble] = (await getInput()).map(parseInput)[0];
+  const highScore = play(numPlayers, maxMarble);
+
+  console.log(highScore);
 }
 
 async function partTwo() {
-  const input = (await getInput()).map(Number);
-}
-  
+  const [numPlayers, maxMarble] = (await getInput()).map(parseInput)[0];
+  const highScore = play(numPlayers, maxMarble * 100);
 
-partOne();
+  console.log(highScore);
+}
+
+partTwo();
