@@ -1,13 +1,11 @@
-import { X_OK } from 'constants';
 import { getInput } from '../../utils';
 import { Matrix } from '../../utils/matrix';
-import { Position, min, max, sum } from '../../utils/position';
+import { Position, min, max, sum, multiply, area } from '../../utils/position';
 
 type Particle = {
   position: Position,
   velocity: Position
 };
-
 
 function parseInput(input: string): Particle {
   const regex = /^position=<\s?(-?\d+), \s?(-?\d+)> velocity=<\s?(-?\d+), \s?(-?\d+)>/;
@@ -22,38 +20,53 @@ function parseInput(input: string): Particle {
   };
 }
 
-function draw(input:Position[]) {
-  const maxP = max(input);
+function transpose(input: Position[]) {
+  const topLeft = min(input);
+  return input.map(i => sum(i, multiply(topLeft, { x: -1, y: -1 })));
+}
 
+function draw(input:Position[]) {
+  const positions = transpose(input);
+  const maxP = max(positions);
+  
   const a:string[][] = [];
   for (let y = 0; y <= maxP.y; y++) {
     a[y] = [];
     for (let x = 0; x <= maxP.x; x++) {
-      a[y][x] = '';
+      a[y][x] = ' ';
     }
   }
-  input.forEach(p => {
+  positions.forEach(p => {
     a[p.y][p.x] = '#';
   });
   const m = new Matrix(a);
   return m.draw();
 }
 
-async function partOne() {
-  const input = (await getInput()).map(parseInput);
-  const m = new Matrix<string>();
-  input.forEach(i => m.set(i.position, '#'))
-  const topLeft = min(input.map(i => i.position))
-  const coords = input.map(x => ({
-    position: sum(x.position, topLeft),
-    velocity: x.velocity
-  }));
-  draw(coords.map(c => c.position))
+function getArea(positions: Position[]) {
+  const maxP = max(positions);
+  const minP = min(positions);
+  return area(minP, maxP);
 }
 
-async function partTwo() {
-  const input = (await getInput()).map(Number);
-}
-  
+async function solution() {
+  const coords = (await getInput()).map(parseInput);
+  let prevPositions = coords.map(c => c.position);
+  let prevArea = getArea(prevPositions);
+  let seconds = 0;
+  while(true) {
+    coords.forEach(c => c.position = sum(c.position, c.velocity));
+    const positions = coords.map(c => c.position);
+    if (getArea(positions) > prevArea) {
+      break;
+    }
+    prevPositions = positions;
+    prevArea = getArea(positions);
+    seconds++;
+  }
 
-partOne();
+  console.log(draw(prevPositions));
+  console.log(seconds);
+}
+
+solution();
