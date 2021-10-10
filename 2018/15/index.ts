@@ -1,14 +1,24 @@
-import { getInput } from '../../utils';
+import { getInput, sum } from '../../utils';
 import { Matrix } from '../../utils/matrix';
 import { equals, Position, readingOrder } from '../../utils/position';
-import { dijkstra, shortestPath } from '../../utils/dijkstra';
+import { dijkstra } from '../../utils/dijkstra';
+
+const OPEN = '.';
+const BLOCK = '#';
+
+type Square = '.' | '#' | Unit;
+
+type PositionUnit = {
+  position: Position,
+  unit: Unit
+}
 
 class Unit {
   static ELF = 'E';
   static GOBLIN = 'G';
 
   private static ATTACK_POWER = 3;
-  private static START_HP = 300;
+  private static START_HP = 200;
 
   private _hp: number;
   private _position: Position;
@@ -19,7 +29,7 @@ class Unit {
     this._type = type;
     this._position = position;
   }
-
+/*
   get position() {
     return this._position;
   }
@@ -27,7 +37,7 @@ class Unit {
   set position(p: Position) {
     this._position = p;
   }
-
+*/
   get type() {
     return this._type;
   }
@@ -36,16 +46,24 @@ class Unit {
     return this._hp;
   }
 
-  static sortEnemies(a: Unit, b: Unit) {
-    return (a.hp !== b.hp) ? Math.sign(a.hp - b.hp) : readingOrder(a.position, b.position);
-  }
-
   attack() {
     this._hp -= Unit.ATTACK_POWER;
   }
 
   isAlive() {
     return this._hp > 0;
+  }
+
+  enemy(): string {
+     return (this.type === Unit.ELF) ? Unit.GOBLIN : Unit.ELF;
+  }
+
+  toString() {
+    return this.type;
+  }
+
+  isEnemy(s: Square | undefined) {
+    return s instanceof Unit && (s as Unit).type === this.enemy();
   }
 }
 
@@ -60,54 +78,86 @@ function neighbors(p: Position): Position[] {
 }
 
 async function partOne() {
-  const input = (await getInput()).map(x => x.split(''));
-  const m = new Matrix(input);
+  const input = (await getInput()).map(x => x.split('').map<Square>(x => {
+    if (x === Unit.ELF || x === Unit.GOBLIN) {
+      return new Unit(x, {x:1,y:1});
+    } else if (x === BLOCK || x === OPEN) {
+      return x;
+    } else {
+      throw new Error('Unexpected type');
+    }
+  }));
+  const m = new Matrix<Square>(input);
   console.log(m.draw())
 
-  const units = m.asArray().filter(x => m.get(x) === 'E' || m.get(x) === 'G').map(c => new Unit(m.get(c) as string, c));
-
-  for (let i = 0; i < 5; i++) {
-    //const units = m.asArray().filter(x => m.get(x) === 'E' || m.get(x) === 'G').sort(readingOrder);
-    units.sort((a, b) => readingOrder(a.position, b.position)).forEach(u => {
-      
-      const enemy = (u.type === 'E') ? 'G' : 'E';
-      // combat
-      if (neighbors(u.position).some(n => m.get(n) === enemy)) {
-        return;
-      }
   
-      // find closest enemy
-      const enemies = m.asArray().filter(x => m.get(x) === enemy);
-      const closestEnemy = closest(u.position, enemies, m);
-      if (!closestEnemy) {
+  for (let i = 0; i < 50000; i++) {
+    getUnits(m).sort((a,b) => readingOrder(a.position, b.position)).forEach((pu) => {
+      let {position, unit}  = pu;
+
+      if (!unit.isAlive()) {
         return;
       }
-      // Move towards that enemy
-      const candidates = neighbors(u.position).filter(n => m.get(n) === '.' /*|| m.get(n) === 'G'*/);
-      const nextPosition = closest(closestEnemy, candidates, m) as Position;
-      
-      //Move to that square
-      m.set(u.position, '.');
-      m.set(nextPosition, u.type);
-      u.position = nextPosition;
 
-      const enemiesInRange = neighbors(nextPosition)
-        .filter(p => m.get(p) === enemy)
-        .map(x => units.find(u => equals(u.position, x)) as Unit)
-        .sort(Unit.sortEnemies);
-      const enemySelected = enemiesInRange[0];
-      if (enemySelected) {
-        enemySelected.attack();
+      if (!neighbors(position).some(n => unit.isEnemy(m.get(n)))) {
+        // find closest enemy
+        const enemies = getUnits(m).filter(pu => unit.isEnemy(pu.unit));
+        const closestEnemy = closest(position, enemies.map<Position>(pu => pu.position), m);
+        if (!closestEnemy) {
+          return;
+        }
+        // Move towards that enemy
+        const candidates = neighbors(position).filter(n => m.get(n) === OPEN);
+        const nextPosition = closest(closestEnemy, candidates, m) as Position;
+        
+        //Move to that square
+        m.set(position, OPEN);
+        m.set(nextPosition, unit);
+        position = nextPosition;
       }
+
+      const enemiesInRange = neighbors(position)
+        .filter(p => unit.isEnemy(m.get(p)))
+        .map<PositionUnit>(p => ({position: p, unit: m.get(p) as Unit}))
+        .sort((a: PositionUnit, b: PositionUnit) => {
+          return (a.unit.hp !== b.unit.hp) ? Math.sign(a.unit.hp - b.unit.hp) : readingOrder(a.position, b.position);
+        });
+      const enemySelected = enemiesInRange[0];
+      
+      if (enemySelected) {
+        enemySelected.unit.attack();
+        if (!enemySelected.unit.isAlive()) {
+          m.set(enemySelected.position, OPEN);
+        }
+      }      
     });
-    console.log('')
+
+    /*console.log('')
+    console.log(i)
     console.log(m.draw())
-  }
+    console.log(getUnits(m).map(u => u.unit.hp))
+*/
+    if (new Set([...getUnits(m).map(u => u.unit.type)]).size === 1) {
+      console.log('');
+      console.log(m.draw())
+      console.log(i, getUnits(m).map(u => u.unit.hp).reduce(sum))
+      console.log(i * getUnits(m).map(u => u.unit.hp).reduce(sum))
+      console.log(getUnits(m).map(u => u.unit.hp))
+      //console.log(m.draw());
+      break;
+    }
+  } 
 }
 
-function closest(from: Position, candidates: Position[], m: Matrix<string>): Position | undefined {
+function getUnits(m: Matrix<Square>): PositionUnit[] {
+  return m.asArray()
+    .filter(x => m.get(x) instanceof Unit)
+    .map<PositionUnit>(p => ({position: p, unit:  m.get(p) as Unit }));
+}
+
+function closest(from: Position, candidates: Position[], m: Matrix<string | Unit>): Position | undefined {
   const nextDistances = candidates.map(x => {
-    return dijkstra(from, x, (node) => neighbors(node).filter(p => m.get(p) === '.' || equals(p, x))
+    return dijkstra(from, x, (node) => neighbors(node).filter(p => m.get(p) === OPEN || equals(p, x))
     ) || Infinity;
   });
   const minDistance = Math.min(...nextDistances);
@@ -119,8 +169,8 @@ function closest(from: Position, candidates: Position[], m: Matrix<string>): Pos
       return [...acc, i];
     }
     return acc;
-  }, []).map(i => candidates[i]).sort(readingOrder)[0];
-  return c;
+  }, []).map(i => candidates[i]).sort(readingOrder);
+  return c[0];
 }
 
 async function partTwo() {
