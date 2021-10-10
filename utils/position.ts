@@ -17,3 +17,5 @@ export const manhattanDistance = (p1: Position, p2: Position): number => Math.ab
 export const area = (p1: Position, p2: Position): number => Math.abs(p1.x - p2.x) * Math.abs(p1.y - p2.y);
 
 export const equals = (p1: Position, p2: Position): boolean => p1.x === p2.x && p1.y === p2.y;
+
+export const readingOrder = (a:Position, b:Position) => (a.y !== b.y) ? Math.sign(a.y - b.y) : Math.sign(a.x - b.x);
