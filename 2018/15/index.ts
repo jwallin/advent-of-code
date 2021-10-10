@@ -17,27 +17,19 @@ class Unit {
   static ELF = 'E';
   static GOBLIN = 'G';
 
-  private static ATTACK_POWER = 3;
+  static ATTACK_POWER = 3;
   private static START_HP = 200;
 
-  private _hp: number;
-  private _position: Position;
+  protected _hp: number;
   private _type: string;
+  private _attack: number;
 
-  constructor(type: string, position: Position) {
+  constructor(type: string, attack: number = Unit.ATTACK_POWER) {
     this._hp = Unit.START_HP;
     this._type = type;
-    this._position = position;
-  }
-/*
-  get position() {
-    return this._position;
+    this._attack = attack;
   }
 
-  set position(p: Position) {
-    this._position = p;
-  }
-*/
   get type() {
     return this._type;
   }
@@ -46,8 +38,8 @@ class Unit {
     return this._hp;
   }
 
-  attack() {
-    this._hp -= Unit.ATTACK_POWER;
+  attack(enemy: Unit) {
+    enemy._hp -= this._attack;
   }
 
   isAlive() {
@@ -77,16 +69,18 @@ function neighbors(p: Position): Position[] {
   ];
 }
 
+function mapChar(x:string):Square {
+  if (x === Unit.ELF || x === Unit.GOBLIN) {
+    return new Unit(x);
+  } else if (x === BLOCK || x === OPEN) {
+    return x;
+  } else {
+    throw new Error('Unexpected type');
+  }
+}
+
 async function partOne() {
-  const input = (await getInput()).map(x => x.split('').map<Square>(x => {
-    if (x === Unit.ELF || x === Unit.GOBLIN) {
-      return new Unit(x, {x:1,y:1});
-    } else if (x === BLOCK || x === OPEN) {
-      return x;
-    } else {
-      throw new Error('Unexpected type');
-    }
-  }));
+  const input = (await getInput()).map(x => x.split('').map<Square>(mapChar));
   const m = new Matrix<Square>(input);
   console.log(m.draw())
 
@@ -99,54 +93,35 @@ async function partOne() {
         return;
       }
 
-      if (!neighbors(position).some(n => unit.isEnemy(m.get(n)))) {
-        // find closest enemy
-        const enemies = getUnits(m).filter(pu => unit.isEnemy(pu.unit));
-        const closestEnemy = closest(position, enemies.map<Position>(pu => pu.position), m);
-        if (!closestEnemy) {
-          return;
-        }
-        // Move towards that enemy
-        const candidates = neighbors(position).filter(n => m.get(n) === OPEN);
-        const nextPosition = closest(closestEnemy, candidates, m) as Position;
-        
-        //Move to that square
-        m.set(position, OPEN);
-        m.set(nextPosition, unit);
-        position = nextPosition;
-      }
+      position = moveUnit(position, unit, m);
 
-      const enemiesInRange = neighbors(position)
-        .filter(p => unit.isEnemy(m.get(p)))
-        .map<PositionUnit>(p => ({position: p, unit: m.get(p) as Unit}))
-        .sort((a: PositionUnit, b: PositionUnit) => {
-          return (a.unit.hp !== b.unit.hp) ? Math.sign(a.unit.hp - b.unit.hp) : readingOrder(a.position, b.position);
-        });
-      const enemySelected = enemiesInRange[0];
+      const enemySelected = getEnemy(position, unit, m);
       
       if (enemySelected) {
-        enemySelected.unit.attack();
+        unit.attack(enemySelected.unit);
         if (!enemySelected.unit.isAlive()) {
           m.set(enemySelected.position, OPEN);
         }
       }      
     });
 
-    /*console.log('')
-    console.log(i)
-    console.log(m.draw())
-    console.log(getUnits(m).map(u => u.unit.hp))
-*/
     if (new Set([...getUnits(m).map(u => u.unit.type)]).size === 1) {
       console.log('');
       console.log(m.draw())
-      console.log(i, getUnits(m).map(u => u.unit.hp).reduce(sum))
-      console.log(i * getUnits(m).map(u => u.unit.hp).reduce(sum))
+      console.log(`${i} * ${getUnits(m).map(u => u.unit.hp).reduce(sum)} = ${i * getUnits(m).map(u => u.unit.hp).reduce(sum)}`);
       console.log(getUnits(m).map(u => u.unit.hp))
-      //console.log(m.draw());
       break;
     }
   } 
+}
+
+function getEnemy(position: Position, unit: Unit, m: Matrix<Square>) {
+  return neighbors(position)
+    .filter(p => unit.isEnemy(m.get(p)))
+    .map<PositionUnit>(p => ({ position: p, unit: m.get(p) as Unit }))
+    .sort((a: PositionUnit, b: PositionUnit) => {
+      return (a.unit.hp !== b.unit.hp) ? Math.sign(a.unit.hp - b.unit.hp) : readingOrder(a.position, b.position);
+    })[0];
 }
 
 function getUnits(m: Matrix<Square>): PositionUnit[] {
@@ -174,8 +149,80 @@ function closest(from: Position, candidates: Position[], m: Matrix<string | Unit
 }
 
 async function partTwo() {
-  const input = (await getInput()).map(Number);
+  const input = (await getInput());
+
+  for (let att = 4; att < 100; att++) {
+    const m = new Matrix<Square>(input.map(x => x.split('').map<Square>(x => {
+      if (x === Unit.ELF || x === Unit.GOBLIN) {
+        return new Unit(x, x === Unit.ELF ? att : Unit.ATTACK_POWER);
+      } else if (x === BLOCK || x === OPEN) {
+        return x;
+      } else {
+        throw new Error('Unexpected type');
+      }
+    })));
+    
+    //console.log(m.draw())
+    let gameOver = false;
+    for (let i = 0; i < 50000; i++) {
+      if (gameOver) {
+        break;
+      }
+      const units = getUnits(m).sort((a,b) => readingOrder(a.position, b.position));
+      for (let j = 0; j < units.length; j++) {
+        let {position, unit}  = units[j];
+        if (!unit.isAlive()) {
+          continue;
+        }
+  
+        position = moveUnit(position, unit, m);
+  
+        const enemySelected = getEnemy(position, unit, m);
+        
+        if (enemySelected) {
+          unit.attack(enemySelected.unit);
+          if (!enemySelected.unit.isAlive()) {
+            if (enemySelected.unit.type === Unit.ELF) {
+              // Game over
+              gameOver = true;
+              break;
+            }
+            m.set(enemySelected.position, OPEN);
+          }
+        }      
+      }
+  
+      if (new Set([...getUnits(m).map(u => u.unit.type)]).size === 1) {
+        console.log('');
+        console.log(m.draw())
+        console.log('power', att);
+        console.log(`${i} * ${getUnits(m).map(u => u.unit.hp).reduce(sum)} = ${i * getUnits(m).map(u => u.unit.hp).reduce(sum)}`);
+        console.log(getUnits(m).map(u => u.unit.hp))
+        return;
+      }
+    } 
+  }  
+  console.log('ok')
 }
   
 
-partOne();
+partTwo();
+
+function moveUnit(position: Position, unit: Unit, m: Matrix<Square>) {
+  if (!neighbors(position).some(n => unit.isEnemy(m.get(n)))) {
+    // find closest enemy
+    const enemies = getUnits(m).filter(pu => unit.isEnemy(pu.unit));
+    const closestEnemy = closest(position, enemies.map<Position>(pu => pu.position), m);
+    if (closestEnemy) {
+      // Move towards that enemy
+      const candidates = neighbors(position).filter(n => m.get(n) === OPEN);
+      const nextPosition = closest(closestEnemy, candidates, m) as Position;
+
+      //Move to that square
+      m.set(position, OPEN);
+      m.set(nextPosition, unit);
+      position = nextPosition;
+    }
+  }
+  return position;
+}
