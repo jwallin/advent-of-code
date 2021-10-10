@@ -1,4 +1,4 @@
-import { getInput, sum } from '../../utils';
+import { sum } from '../../utils';
 
 
 function drawRecipes(recipeScores: number[], elves: number[]) {
@@ -13,6 +13,19 @@ function drawRecipes(recipeScores: number[], elves: number[]) {
   console.log(str);
 }
 
+function existsInArray(inputDigits: number[], recipeScores: number[]) {
+  let index: number | undefined = undefined;
+  for (let i = 0; i < recipeScores.length - inputDigits.length; i++) {
+    if (recipeScores.slice(i, i + inputDigits.length).every((x, j) => x === inputDigits[j])) {
+      index = i;
+    }
+  }
+  return index;
+}
+
+function toDigits(i: number) {
+  return i.toString().split('').map(Number);
+}
 
 async function partOne(i: number) {
   const recipeScores = [3, 7];
@@ -28,9 +41,36 @@ async function partOne(i: number) {
   console.log(recipeScores.slice(i, i + 10).join(''));
 }
 
-async function partTwo() {
-  const input = (await getInput()).map(Number);
+async function partTwo(i: number) {
+  const recipeScores = [3, 7];
+  let elves = [0, 1];
+  let index = 0;
+  let positionToCheck = 0;
+  const digitsToFind = toDigits(i);
+  let found = false;
+
+  while (!found) {  
+    const newRecipes = toDigits(elves.map(x => recipeScores[x]).reduce(sum));
+    recipeScores.push(...newRecipes);
+    
+    elves = elves.map(x => (x + recipeScores[x] + 1) % recipeScores.length);
+
+    while (index + positionToCheck < recipeScores.length) {
+      if (digitsToFind[positionToCheck] === recipeScores[index + positionToCheck]) {
+        if (positionToCheck === digitsToFind.length - 1) {
+          found = true;
+          console.log(index);
+          break;
+        }
+        positionToCheck++;
+      } else {
+        positionToCheck = 0;
+        index++;
+      }
+    }
+
+    //drawRecipes(recipeScores, elves);  
+  }
 }
   
-
-partOne(793031);
+partTwo(793031);
