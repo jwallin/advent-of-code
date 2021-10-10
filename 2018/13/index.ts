@@ -8,7 +8,7 @@ const DIRECTIONS:KeyVal<[Position, string]> = {
   'v': [{x: 0, y: 1}, '|'],
   '<': [{x: -1, y: 0}, '-'],
   '>': [{x: 1, y: 0}, '-']
-}
+};
 
 const LEFT_CURVE = (d: Position) => ({ x: d.y, y: d.x });
 const RIGHT_CURVE = (d: Position) => ({ x: -d.y, y: -d.x});
@@ -17,20 +17,6 @@ const TURN_DIRECTTIONS = [
   (d: Position) => ({x: d.y, y: -d.x}),
   (d: Position) => d,
   (d: Position) => ({x: -d.y, y: d.x})
-  /* 
-  Left:
-    -1,0 -> 0,1       x:y, y:-x
-    0,1 -> 1,0        x: y, y:-x
-    1,0 -> 0,-1       x:y, y:-x
-    0,-1 -> -1, 0     x: y, y: -x
-
-  Right: 
-    -1,0 => 0, -1     x: -y, y: x
-    0,-1 => 1,0       x: -y, y: x
-    1,0 => 0,1        x: -y, y: x
-    0,1 => -1, 0      x: -y, y: x
-
-  */
 ];
 
 const cartSort = (a:Cart, b:Cart) => {
@@ -48,11 +34,13 @@ class Cart {
   private _position: Position;
   private _direction: Position;
   private _turnIndex: number;
+  private _isAlive: boolean;
   
   constructor(position: Position, direction: Position) {
     this._position = position;
     this._direction = direction;
     this._turnIndex = 0;
+    this._isAlive = true;
   }
 
   get position() {
@@ -78,39 +66,55 @@ class Cart {
   leftCurve() {
     this._direction = LEFT_CURVE(this._direction);
   }
+
+  kill() {
+    this._isAlive = false;
+  }
+
+  isAlive() {
+    return this._isAlive;
+  }
 }
 
 async function partOne() {
   const input = (await getInput()).map(x => x.split(''));
   const m = new Matrix(input);
 
-  const carts = m.asArray()
+  const carts = createCarts(m);
+  
+  //drawCarts(m, carts);
+  for(let i = 0; i < 2000; i++) {
+    let collisions = tick([...carts].sort(cartSort), m);
+    if (collisions.length > 0) {
+      console.log('collision', collisions[0]);
+      break;
+    }  
+  }
+  
+}
+
+function createCarts(m: Matrix<string>):Set<Cart> {
+  return new Set(m.asArray()
     .filter(p => m.get(p) !== undefined)
     .filter(p => Object.keys(DIRECTIONS).includes(m.get(p) as string))
     .map(p => {
       const val = m.get(p) as string;
       const [dir, track] = DIRECTIONS[val];
-      
+
       // Update track
       m.set(p, track);
 
       return new Cart(p, dir);
-  });
-  
-  drawCarts(m, carts);
-  for(let i = 0; i < 2000; i++) {
-    // sort carts
-    if (!tick(carts.sort(cartSort), m)) {
-      break;
-    }
-    
-  }
-  
+    }));
 }
 
-function tick(carts: Cart[], m: Matrix<string>): boolean {
+function tick(carts: Cart[], m: Matrix<string>): Position[] {
+  const collisions:Position[] = [];
   for (let i = 0; i < carts.length; i++) {
     const c = carts[i];
+    if (!c.isAlive()) {
+      continue;
+    }
     c.move();
     const t = m.get(c.position) as string;
     switch (t) {
@@ -124,21 +128,19 @@ function tick(carts: Cart[], m: Matrix<string>): boolean {
         c.turn();
         break;
     }
-
-    const positions = carts.map(c => c.position);
-    const collision = positions.find((p, i) => positions.find((q, j) => equals(p, q) && i !== j));
-    //drawCarts(m, carts);
-    if (collision) {
-      drawCarts(m, carts);
-      console.log('collision', collision);
-      return false;
+    
+    const colls = carts
+      .filter((p) => equals(p.position, c.position) && p !== c)
+      .map(p => { p.kill(); return p.position; });
+    if (colls.length > 0) {
+      collisions.push(...colls);
     }
   }
 
-  return true;
+  return collisions;
 }
 
-function drawCarts(m: Matrix<string>, carts: Cart[]) {
+function drawCarts(m: Matrix<string>, carts: Set<Cart>) {
   const trackWithCarts = m.clone();
   
   carts.forEach(c => trackWithCarts.set(c.position, c.drawDirection()));
@@ -147,8 +149,24 @@ function drawCarts(m: Matrix<string>, carts: Cart[]) {
 }
 
 async function partTwo() {
-  const input = (await getInput()).map(Number);
-}
-  
+  const input = (await getInput()).map(x => x.split(''));
+  const m = new Matrix(input);
 
-partOne();
+  const carts = createCarts(m);
+  
+  //drawCarts(m, carts);
+  for(let i = 0; i < 200000; i++) {
+    let collisions = tick([...carts].sort(cartSort), m);
+    if (collisions.length > 0) {
+      [...carts].filter(c => collisions.find(x => equals(c.position, x))).forEach(c => carts.delete(c));
+    }
+    //drawCarts(m, carts);
+    if (carts.size < 2) {
+      console.log(carts);
+      break;
+    }
+  }
+  
+}
+
+partTwo();

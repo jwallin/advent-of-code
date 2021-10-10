@@ -15,3 +15,5 @@ export const multiply = (p1: Position, p2: Position): Position => ({ x: p1.x * p
 export const manhattanDistance = (p1: Position, p2: Position): number => Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
 
 export const area = (p1: Position, p2: Position): number => Math.abs(p1.x - p2.x) * Math.abs(p1.y - p2.y);
+
+export const equals = (p1: Position, p2: Position): boolean => p1.x === p2.x && p1.y === p2.y;
