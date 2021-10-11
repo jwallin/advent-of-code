@@ -5,7 +5,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
     "start": "cd ${INIT_CWD} && ts-node index.ts",
-    "gen": "sh gen.sh"
+    "gen": "sh gen.sh",
+    "lint": "eslint . --ext .ts"
+  },
+  "engines": {
+    "node": ">=10"
   },
   "repository": {
     "type": "git",
@@ -16,6 +20,10 @@
   },
   "devDependencies": {
     "@types/node": "^14.14.10",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.0",
+    "eslint-plugin-node": "^11.1.0",
     "ts-node": "^9.0.0"
   }
 }

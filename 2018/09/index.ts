@@ -14,20 +14,20 @@ class LinkedList {
     this._right.left = this;
   }
 
-  set left(val: LinkedList) {
-    this._left = val;
-  }
-
-  set right(val: LinkedList) {
-    this._right = val;
-  }
-
   get left(): LinkedList {
     return this._left;
   }
 
+  set left(val: LinkedList) {
+    this._left = val;
+  }
+
   get right(): LinkedList {
     return this._right;
+  }
+
+  set right(val: LinkedList) {
+    this._right = val;
   }
 
   get value(): number {

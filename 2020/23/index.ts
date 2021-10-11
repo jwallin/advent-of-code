@@ -23,7 +23,7 @@ class Cup {
 }
 
 function playGame(input: string, numberOfMoves:number, numberOfCups:number):Map<number, Cup> {
-  let inputValues = input.split('').map(Number);
+  const inputValues = input.split('').map(Number);
   const cupValues = inputValues.concat(range(numberOfCups + 1, Math.max(...inputValues) + 1));
   const cups = cupValues.reduce((acc, n) => acc.set(n, new Cup(n)), new Map<number, Cup>());
   const maxVal = cupValues[cupValues.length  - 1];
@@ -43,11 +43,11 @@ function playGame(input: string, numberOfMoves:number, numberOfCups:number):Map<
   
   let current = first;
   for (let i = 0; i < numberOfMoves; i++) {
-    let pick1 = current.next;
-    let pick2 = pick1.next;
-    let pick3 = pick2.next;
+    const pick1 = current.next;
+    const pick2 = pick1.next;
+    const pick3 = pick2.next;
     const picked = [pick1, pick2, pick3];
-    let next = pick3.next;
+    const next = pick3.next;
 
     let destVal = current.value - 1;
     while (destVal < 1 || picked.some(x => x.value === destVal)) {
@@ -75,7 +75,7 @@ function partOne() {
   const cups = playGame(input, 100, input.length);
 
   const allVals:number[] = [];
-  var p = cups.get(1) as Cup;
+  let p = cups.get(1) as Cup;
   for (let j = 0; j < input.length - 1; j++) {
     p = p.next;
     allVals.push(p.value);

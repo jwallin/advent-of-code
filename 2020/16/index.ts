@@ -24,7 +24,6 @@ type PuzzleInput = {
 };
 
 function mapField(input: string): FieldRule {
-  const field = {}
   const a = input.split(': ');
   return {
     fieldName: a[0],

@@ -3,7 +3,7 @@ import { lines } from './lines';
 export const toChars = (value:string): string[] => [...value];
 export const countDigits = (input: number): number => toChars(String(input)).length;
 export const isValidYear = (input: number, min: number, max: number): boolean => countDigits(input) === 4 && input >= min && input <= max;
-export const hasAllValuesFrom = (input:any[], target:any[]): boolean => target.every((v:any) => input.includes(v));
+export const hasAllValuesFrom = <T>(input:T[], target:T[]): boolean => target.every((v:T) => input.includes(v));
 export const range = (length:number, min:number = 0):number[] => [...Array(length - min).keys()].map(k => k + min);
 export const unique = <U>(input: U[]): U[] => Array.from(new Set(input));
 export const sum = (a: number, b: number): number => a + b;
@@ -26,7 +26,7 @@ export function* nestedLoops(range:number, n:number): Generator<number[]> {
   }
 }
 
-export const allEnumNames = (inp:Object):string[] => Object.values(inp).filter(x => typeof x === 'string');
+export const allEnumNames = <Enum extends Record<string, string | number>>(inp: Enum):string[] => (Object.values(inp)).filter(x => typeof x === 'string') as string[]
 
 export function splitArray<T>(input:T[], splitter:T):T[][] {
   const res:T[][] = [];
@@ -39,8 +39,8 @@ export function splitArray<T>(input:T[], splitter:T):T[][] {
   return res;
 }
 
-export const arrayMatch = (a: any[], b: any[]): boolean => a.length === b.length && a.every((x,i) => b[i] === x);
-export const intersection = (...a:any[][]):any[] => a.reduce((a, b) => a.filter(x => b.includes(x)));
+export const arrayMatch = <T>(a: T[], b: T[]): boolean => a.length === b.length && a.every((x,i) => b[i] === x);
+export const intersection = <T>(...a:T[][]):T[] => a.reduce((a, b) => a.filter(x => b.includes(x)));
 
 export const cartesian = (...a:any[]) => a.reduce((a:any[], b:any[]):any[] => a.flatMap((d:any) => b.map((e:any) => [d, e].flat())));
 

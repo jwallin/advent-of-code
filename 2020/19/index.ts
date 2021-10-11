@@ -16,7 +16,7 @@ function createRexStr(input: string, rules: RuleObj):string {
   if (rules[input]) {
     const options:string[] = g.map((o) => {
       const chars = o.split(' ');
-      return chars.map((c,i) => {
+      return chars.map((c,) => {
         return createRexStr(c, rules);
       }).join('');
     });
@@ -63,7 +63,7 @@ async function partTwo() {
   const input = await (await getInput());
   const { rules, messages } = parseInput(input);
   rules['8'] = ['42 +'];
-  rules['11'] = range(10).map(x => `${[...Array(x + 1)].map(y => '42').join(' ')} ${[...Array(x + 1)].map(y => ['31']).join(' ')}`);
+  rules['11'] = range(10).map(x => `${[...Array(x + 1)].map(() => '42').join(' ')} ${[...Array(x + 1)].map(() => ['31']).join(' ')}`);
   const r = createRexStr('0', rules);
   const reg = new RegExp(`^${r}$`);
   console.log(r)

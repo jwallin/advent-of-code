@@ -17,7 +17,7 @@ enum Flip {
   Horizontally,
   Both,
   None
-};
+}
 
 type DirectionMap = {
   [key:string]: Position
@@ -140,7 +140,7 @@ async function partOne():Promise<Matrix<Matrix<string>>> {
 
   const imagesLeft = new Set(images.map(x => x.id));
 
-  let m = new Map<string, Image>();
+  const m = new Map<string, Image>();
   while (imagesLeft.size > 0) {
     console.log(`${imagesLeft.size} images to go`)
     // If matrix length === 0, do something
@@ -176,7 +176,7 @@ async function partOne():Promise<Matrix<Matrix<string>>> {
   const minPos = min([...m.keys()].map(k => fromKey(k)));
   const maxPos = max([...m.keys()].map(k => fromKey(k)));
 
-  let corners = [
+  const corners = [
     { x: minPos.x, y: minPos.y },
     { x: maxPos.x, y: minPos.y },
     { x: minPos.x, y: maxPos.y },
@@ -196,7 +196,7 @@ async function partOne():Promise<Matrix<Matrix<string>>> {
 function findSeaMonster(m:Matrix<string>):Position[] {
   const maxP = max(SEA_MONSTER_PATTERN);
 
-  let hits:Position[] = [];
+  const hits:Position[] = [];
   const allPositions = m.asArray();
   
   for (let i = 0; i < allPositions.length; i++) {
@@ -229,7 +229,7 @@ async function partTwo() {
   // Draw large matrix
   const rows:string[][] = [];
   matrix.asArray().forEach((p:Position) => {
-    let m = matrix.get(p);
+    const m = matrix.get(p);
     if (m !== undefined) {
       const start = m.rows.length; 
       m.rows.forEach((r, i) => {
@@ -242,7 +242,7 @@ async function partTwo() {
     }
   });
 
-  const largeMatrix = new Matrix<string>(rows).flipVertically();;
+  const largeMatrix = new Matrix<string>(rows).flipVertically();
   const variation = getVariations(largeMatrix).find(v => findSeaMonster(v).length > 0);
   if (variation) {
     const numOfSeaMonsters = findSeaMonster(variation).length;

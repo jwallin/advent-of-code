@@ -27,7 +27,6 @@ function applyRules(matrix: Matrix, updateSeat: (matrix: Matrix, p: Position) =>
 async function run(updateSeat: (matrix: Matrix, p: Position) => string): Promise<Matrix> {
   let matrix = await getMatrix();
   let oldMatrix;
-  let i = 0;
 
   while(!oldMatrix || !matrix.equals(oldMatrix)) {
     oldMatrix = matrix;

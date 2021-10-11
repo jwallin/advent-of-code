@@ -45,7 +45,7 @@ export function dijkstra(start: Position, dest: Position, neighborsFn: (n: Posit
     while (tail < queue.length) {
       let u = queue[tail++];  // Pop a vertex off the queue.
       const neighbors = neighborsFn(fromKey(u));
-      for (var i = 0; i < neighbors.length; ++i) {
+      for (let i = 0; i < neighbors.length; ++i) {
         const v = neighbors[i];
         const vKey = toKey(v);
         if (visited.has(vKey)) {

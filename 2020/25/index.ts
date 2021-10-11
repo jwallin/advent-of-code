@@ -18,8 +18,8 @@ function transform(subject: number, loopSize: number, toFind: number | undefined
 }
 
 function partOne() {
-  let cardPbk = 2084668;
-  let doorPbk = 3704642;
+  const cardPbk = 2084668;
+  const doorPbk = 3704642;
   const subjectNumber = 7;
 
   const cardLoopSize = transform(subjectNumber, MAX, cardPbk);

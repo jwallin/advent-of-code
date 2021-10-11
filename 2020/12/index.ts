@@ -80,8 +80,8 @@ function applyInstructions(instructions:Instruction[], shipPos: Position, wayPoi
 
 async function partOne() {
   const instructions = (await getInput()).map(x => toInstruction(x));
-  let currentPos: Position = { x: 0, y: 0 };
-  let direction: Position = DIRECTIONS['E'];
+  const currentPos: Position = { x: 0, y: 0 };
+  const direction: Position = DIRECTIONS['E'];
   
   const shipPos = applyInstructions(instructions, currentPos, direction, false);
   console.log(Math.abs(shipPos.x) + Math.abs(shipPos.y));
@@ -89,8 +89,8 @@ async function partOne() {
 
 async function partTwo() {
   const instructions = (await getInput()).map(x => toInstruction(x));
-  let currentPos: Position = { x: 0, y: 0 };
-  let wayPoint: Position = { x: 10, y: -1 };  // relative to ship
+  const currentPos: Position = { x: 0, y: 0 };
+  const wayPoint: Position = { x: 10, y: -1 };  // relative to ship
   
   const shipPos = applyInstructions(instructions, currentPos, wayPoint, true);
   console.log(Math.abs(shipPos.x) + Math.abs(shipPos.y));

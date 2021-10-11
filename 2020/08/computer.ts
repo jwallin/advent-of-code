@@ -13,7 +13,7 @@ export const INSTRUCTIONS = {
 export class Computer {
   private _instructions: Instruction[];
   private _accumulator: number;
-  private _pointer: number = 0;
+  private _pointer = 0;
 
   constructor(instructions: Instruction[]) {
     this._instructions = instructions;
