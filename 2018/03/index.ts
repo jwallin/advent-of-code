@@ -1,4 +1,3 @@
-import { parse } from 'path';
 import { getInput } from '../../utils';
 import { Matrix } from '../../utils/matrix';
 
@@ -10,7 +9,7 @@ type Claim = {
   height: number
 }
 
-function parseClaim(input:String):Claim {
+function parseClaim(input: string):Claim {
   // #5 @ 65,785: 13x15
   const [id, data] = input.split(' @ ');
   const [coords, size] = data.split(': ');

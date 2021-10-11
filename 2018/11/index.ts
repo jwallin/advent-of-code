@@ -59,7 +59,7 @@ function kadane2D(a:number[][]) {
   let maxSize = 0;
   for (let yStart = 0; yStart < preSum.length; yStart++) {
     for (let yEnd = yStart; yEnd < preSum.length; yEnd++) {
-      let sums:number[] = [];
+      const sums:number[] = [];
       for (let i = 0; i < preSum.length; i++) {
         if (yStart > 0) {
           sums[i] = preSum[yEnd][i] - preSum[yStart - 1][i];

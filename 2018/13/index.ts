@@ -84,7 +84,7 @@ async function partOne() {
   
   //drawCarts(m, carts);
   for(let i = 0; i < 2000; i++) {
-    let collisions = tick([...carts].sort(cartSort), m);
+    const collisions = tick([...carts].sort(cartSort), m);
     if (collisions.length > 0) {
       console.log('collision', collisions[0]);
       break;
@@ -140,6 +140,7 @@ function tick(carts: Cart[], m: Matrix<string>): Position[] {
   return collisions;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function drawCarts(m: Matrix<string>, carts: Set<Cart>) {
   const trackWithCarts = m.clone();
   
@@ -156,7 +157,7 @@ async function partTwo() {
   
   //drawCarts(m, carts);
   for(let i = 0; i < 200000; i++) {
-    let collisions = tick([...carts].sort(cartSort), m);
+    const collisions = tick([...carts].sort(cartSort), m);
     if (collisions.length > 0) {
       [...carts].filter(c => collisions.find(x => equals(c.position, x))).forEach(c => carts.delete(c));
     }

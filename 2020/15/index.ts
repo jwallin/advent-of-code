@@ -3,7 +3,7 @@ import { getInput } from '../../utils';
 async function playGame(rounds:number) {
   const startingNumbers:number[] = (await getInput())[0].split(',').map(Number);
   
-  let map = new Map<number, number>();
+  const map = new Map<number, number>();
   let n:number = startingNumbers[startingNumbers.length - 1];
   let last:number | undefined;
   

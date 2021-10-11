@@ -116,7 +116,7 @@ function getAvailableSteps(stepVals: Set<Step>) {
 async function partOne() {
   const steps = await getSteps();
 
-  let finishedSteps: string[] = [];
+  const finishedSteps: string[] = [];
   while (steps.size > 0) {
     const nextStep = getAvailableSteps(steps)[0];
     nextStep.complete();

@@ -3,7 +3,7 @@ import { getInput, toChars, sum, prependZeros } from '../../utils';
 enum InstructionType {
   Mask,
   Memory
-};
+}
 
 type MemoryAddress = {
   [key: number]: number
@@ -27,7 +27,7 @@ function toBitArray(value: number, length: number = 0): string[] {
 }
 
 function bitmask(val:number, mask:string, ignoreValues:string[] = ['X']): string {
-  let result = toBitArray(val, mask.length);
+  const result = toBitArray(val, mask.length);
   toChars(mask).forEach((m:string, i:number) => {
     if (ignoreValues.includes(m)) {
       return;
@@ -39,17 +39,17 @@ function bitmask(val:number, mask:string, ignoreValues:string[] = ['X']): string
 
 function getAllValues(input: string):number[] {
   const numBits = toChars(input).filter(x => x === 'X').length;
-  let values:number[] = [];
+  const values:number[] = [];
   for (let i = 0; i < Math.pow(2, numBits); i ++) {
     const bits = toBitArray(i, numBits);
-    let a = toChars(input).map(c => c === 'X' ? bits.shift() : c);
+    const a = toChars(input).map(c => c === 'X' ? bits.shift() : c);
     values.push(parseInt(a.join(''), 2));
   }
   return values;
 }
 
 function getInstruction(input:string): Instruction {
-  let p = input.split(' = ');
+  const p = input.split(' = ');
   if (p[0] === 'mask') {
     return {
       value: p[1],
@@ -67,7 +67,7 @@ function getInstruction(input:string): Instruction {
 async function partOne() {
   const input = await getInput();
   let mask = '';
-  const mem:any = [];
+  const mem:number[] = [];
   input.forEach(x => {
     const instruction = getInstruction(x);
     if (instruction.type === InstructionType.Mask) {

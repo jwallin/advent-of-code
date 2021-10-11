@@ -11,7 +11,7 @@ const DIRECTIONS: Position[] =[
   { x: -1, y: -1 }, // NW
 ];
 
-export class Matrix<T = any> {
+export class Matrix<T> {
   private _matrix: T[][];
 
   constructor(matrix: T[][] = []) {

@@ -13,7 +13,7 @@ type LogDay = {
   }
 }
 
-function parseLogEntry(input: String):LogEntry {
+function parseLogEntry(input: string):LogEntry {
   const regex = /\[(.+)\]\s(.*)$/;
   const m = input.match(regex);
   if (!m) {
@@ -26,7 +26,7 @@ function parseLogEntry(input: String):LogEntry {
 }
 
 function parseGuardId(entry:string):number {
-  const regex = /\#(\d+)\s/;
+  const regex = /#(\d+)\s/;
   const m = entry.match(regex);
   if (!m) {
     throw new Error(`Couldnt parse guard: ${entry}`);

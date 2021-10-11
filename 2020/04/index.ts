@@ -39,7 +39,7 @@ const FIELDS: PassportField = {
 }
 
 async function getPassports():Promise<Passport[]> {
-  const candidates: string[] = (await getInput()).join(' ').split('  ');;
+  const candidates: string[] = (await getInput()).join(' ').split('  ');
   
   return candidates.map(c => c.split(' ').map(x => x.split(':'))
                    .reduce((p, c) => Object.assign(p, { [c[0]]: c[1] }), {}));              

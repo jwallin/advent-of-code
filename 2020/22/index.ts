@@ -50,7 +50,7 @@ function playGame(p1:Player, p2: Player, recursiveRule:boolean = false): string 
     const key = toKey(p1.deck, p2.deck);
     if (memo.has(key)) {
       return p1.name;
-    };
+    }
     memo.add(key);
 
     const p1card = p1.draw();

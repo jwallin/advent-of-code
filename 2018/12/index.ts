@@ -42,7 +42,7 @@ function generation(state: string[], rules: KeyVal<string>) {
   const f = ['.', '.', '.', ...state, '.', '.', '.'];
   for (let i = 0; i < f.length; i++) {
     const pots = f.slice(i - 2, i + 3);
-    newState[i] = rules[pots.join('')] || '.';;
+    newState[i] = rules[pots.join('')] || '.';
   }
   return newState;
 }
@@ -73,4 +73,3 @@ async function partTwo() {
 }
 
 partTwo();
-

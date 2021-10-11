@@ -26,7 +26,7 @@ async function partOne() {
     }
   }
 
-  const contestants = input.reduce<Number[]>((acc, p, i) => {
+  const contestants = input.reduce<number[]>((acc, p, i) => {
     if (p.x !== maxX && p.x !== minX && p.y !== maxY && p.y !== minY) {
       return acc.concat([i]);
     }

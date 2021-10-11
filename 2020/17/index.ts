@@ -63,7 +63,7 @@ async function run(dimensions: number) {
   let newMatrix = await getMap(dimensions);
   for (let i = 0; i < NUM_CYCLES; i++) {
     newMatrix = cycle(newMatrix, dimensions);
-    const activeCubes = [...newMatrix.entries()].filter(([pos, active]) => active === true);
+    const activeCubes = [...newMatrix.entries()].filter(([, active]) => active === true);
     console.log(i, activeCubes.length)
   }
 }

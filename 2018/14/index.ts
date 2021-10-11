@@ -1,6 +1,7 @@
 import { sum } from '../../utils';
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function drawRecipes(recipeScores: number[], elves: number[]) {
   const str = recipeScores.map((x, i) => {
     if (elves[0] === i) {
@@ -11,16 +12,6 @@ function drawRecipes(recipeScores: number[], elves: number[]) {
     return ` ${x} `;
   }).join(' ');
   console.log(str);
-}
-
-function existsInArray(inputDigits: number[], recipeScores: number[]) {
-  let index: number | undefined = undefined;
-  for (let i = 0; i < recipeScores.length - inputDigits.length; i++) {
-    if (recipeScores.slice(i, i + inputDigits.length).every((x, j) => x === inputDigits[j])) {
-      index = i;
-    }
-  }
-  return index;
 }
 
 function toDigits(i: number) {

@@ -33,7 +33,7 @@ async function partTwo() {
     {x: 7, y: 1}, 
     {x: 1, y: 2}
   ];
-  let totalTrees = directions.reduce<number>((prev: number, curr: Direction) => prev * traverseTrees(matrix, curr), 1);
+  const totalTrees = directions.reduce<number>((prev: number, curr: Direction) => prev * traverseTrees(matrix, curr), 1);
   console.log(totalTrees)
 }
 
