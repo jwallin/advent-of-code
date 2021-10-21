@@ -39,7 +39,7 @@ export function splitArray<T>(input:T[], splitter:T):T[][] {
   return res;
 }
 
-export const arrayMatch = <T>(a: T[], b: T[]): boolean => a.length === b.length && a.every((x,i) => b[i] === x);
+export const arrayMatch = <T>(a: T[], b: T[]): boolean => JSON.stringify(a) === JSON.stringify(b); //a.length === b.length && a.every((x,i) => b[i] === x);
 export const intersection = <T>(...a:T[][]):T[] => a.reduce((a, b) => a.filter(x => b.includes(x)));
 
 export const cartesian = (...a:any[]) => a.reduce((a:any[], b:any[]):any[] => a.flatMap((d:any) => b.map((e:any) => [d, e].flat())));
@@ -57,4 +57,30 @@ export function* combinations(array: number[], k:number, start:number = 0): Gene
       }
     }
   }
+}
+
+export function arrayIndexOf<T>(arr:T[], value:T[]):number | undefined {
+  for (let i = 0; i < arr.length; i++) {
+    if (arrayMatch(arr.slice(i, i + value.length), value)) {
+      return i;
+    }
+  }
+  return undefined;
+}
+
+export function splitArrayBy<T>(arr:T[], val: T): T[][] {
+  const arrs:T[][] = [];
+  let currArr:T[] = [];
+  while (arr.length) {
+    const v = arr.shift() as T;
+    if (v === val) {
+      arrs.push(currArr);
+      currArr = [];
+    } else {
+      currArr.push(v);
+    }
+  }
+  arrs.push(currArr);
+  return arrs.filter(x => x.length > 0);
+
 }
