@@ -62,25 +62,24 @@ function flow(m:Matrix<string>, p:Position) {
   }
 }
 
-async function partOne() {
-  const input = (await getInput()).map(parseInput).flat();
+async function partOneAndTwo() {
+  const i = (await getInput())
+  const input = i.map(parseInput).flat();
   const m = new Matrix<string>();
-  const spring = { x:500, y: 0 };
+  const spring = { x: 500, y: 0 };
 
   const minY = min(input).y;
   const maxY = max(input).y;
-  
-  m.fill(sum(min(input.concat(spring)), {x: -1, y: 0}), sum(max(input), {x: 1, y: 0}), '.');
+
+  m.fill(sum(min(input.concat(spring)), { x: -1, y: 0 }), sum(max(input), { x: 1, y: 0 }), '.');
   input.forEach(i => m.set(i, '#'));
-  
+
   flow(m, spring);
 
-  const v = m.rows.slice(minY, maxY + 1).reduce((acc, x) => acc + x.filter(x => x === '|' || x === '~').length, 0);
-  console.log(v)
+  const water = m.rows.slice(minY, maxY + 1).reduce((acc, x) => acc + x.filter(x => x === '|' || x === '~').length, 0);
+  const rest = m.rows.slice(minY, maxY + 1).reduce((acc, x) => acc + x.filter(x => x === '~').length, 0);
+  
+  console.log(water, rest)
 }
 
-async function partTwo() {
-  const input = (await getInput()).map(Number);
-}
-
-partOne();
+partOneAndTwo();
