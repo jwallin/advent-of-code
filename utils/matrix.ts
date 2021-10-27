@@ -36,6 +36,16 @@ export class Matrix<T = any> {
     return this._matrix;
   }
 
+  fill(from: Position, to: Position, value: T, overwrite = true) {
+    for (let y = from.y; y <= to.y; y++) {
+      for (let x = from.x; x <= to.x; x++) {
+        if (overwrite || this.get({x,y}) === undefined) {
+          this.set({x,y}, value);  
+        }
+      }
+    }
+  }
+
   set(pos: Position, value: T) {
     this._getOrSetRow(pos.y)[pos.x] = value;
   }
@@ -145,5 +155,9 @@ export class Matrix<T = any> {
 
   toString() {
     return this.draw();
+  }
+
+  positionsWithValue(value: T) {
+    return this.asArray().filter(x => this.get(x) === value);
   }
 }
