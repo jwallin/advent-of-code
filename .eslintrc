@@ -21,7 +21,7 @@
             "plugin:@typescript-eslint/recommended"
           ],
           "rules": {
-            "@typescript-eslint/no-unused-vars": ["error", { "vars": "all", "args": "after-used", "varsIgnorePattern": "part(One|Two)" }],
+            "@typescript-eslint/no-unused-vars": ["warn", { "vars": "all", "args": "after-used", "varsIgnorePattern": "part(One|Two)" }],
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-empty-function": "off",
             "@typescript-eslint/no-this-alias": "off",
