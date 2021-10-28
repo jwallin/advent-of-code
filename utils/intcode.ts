@@ -7,7 +7,7 @@ type Instruction = {
 
 type OpFunction = (r: number[], a:number, b:number, c:number) => void
 
-const OPERATIONS:KeyVal<OpFunction> = {
+export const OPERATIONS:KeyVal<OpFunction> = {
   addr: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] + r[b];
   },
@@ -69,9 +69,13 @@ export class IntCode {
   private _instructions:Instruction[];
   private _registers:number[];
   private _ip:number = -1;
+  private _executedInstructions:number = 0;
+  private _operations: KeyVal<OpFunction>;
+  private _halted = false;
 
-  constructor(registers: number[], instructions:string[]) {
+  constructor(registers: number[], instructions:string[], operations:KeyVal<OpFunction> = OPERATIONS) {
     this._registers = registers;
+    this._operations = operations;
 
     if (instructions[0].startsWith('#')) {
       this._ip = Number(instructions.shift()?.match(/#ip\s(\d+)/)?.[1]);
@@ -81,7 +85,7 @@ export class IntCode {
       .map(x => x.split(' '))
       .map(x => {
         const opName = x.shift() as string;
-        const op = OPERATIONS[opName];
+        const op = this._operations[opName];
         if (!op) { throw new Error('Unknown operation ' + opName)}
         return {
           op,
@@ -91,21 +95,34 @@ export class IntCode {
   }
 
   run() {
-    while (this._registers[this._ip] < this._instructions.length) {
-      // Load instruction
-      const instr = this._instructions[this._registers[this._ip]];
-  
-      //Run
-      this.callOp(instr.op, ...instr.arguments);
-      //console.log(p, instr, registers);
-  
-      //Update ip
-      this._registers[this._ip] += 1;
+    while (!this.isHalt()) {
+     this.step();
     }
   }
 
-  callOp(fn:OpFunction, ...args:number[]) {
-    const [a, b, c] = args;
-    fn(this._registers, a, b, c);
+  step() {
+    // Load instruction
+    const instr = this._instructions[this._registers[this._ip]];
+      
+    //Run
+    const [a, b, c] = instr.arguments;
+    instr.op(this._registers, a, b, c);
+    //console.log(p, instr, registers);
+
+    //Update ip
+    this._registers[this._ip] += 1;
+    this._executedInstructions++;
+  }
+
+  isHalt() {
+    return this._halted || this._registers[this._ip] >= this._instructions.length;
+  }
+
+  halt() {
+    this._halted = true;
+  }
+  
+  get executedInstructions() {
+    return this._executedInstructions;
   }
 }
