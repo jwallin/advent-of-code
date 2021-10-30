@@ -19,3 +19,10 @@ export const area = (p1: Position, p2: Position): number => Math.abs(p1.x - p2.x
 export const equals = (p1: Position, p2: Position): boolean => p1.x === p2.x && p1.y === p2.y;
 
 export const readingOrder = (a:Position, b:Position) => (a.y !== b.y) ? Math.sign(a.y - b.y) : Math.sign(a.x - b.x);
+
+export const NEIGHBORS: Position[] =[
+  { x: 0, y: -1 },  // N
+  { x: 1, y: 0 },   // E
+  { x: 0, y: 1 },   // S
+  { x: -1, y: 0 },  // W
+];

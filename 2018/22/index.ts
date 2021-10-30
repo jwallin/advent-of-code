@@ -1,5 +1,5 @@
 import { getInput } from '../../utils';
-import { equals, Position, sum, toKey } from '../../utils/position';
+import { equals, NEIGHBORS, Position, sum, toKey } from '../../utils/position';
 import { KeyVal } from '../../utils/types';
 
 const PADDING = 50;
@@ -111,14 +111,6 @@ function getPossibleTools(type: RegionType): Tool[] {
   }
   throw new Error('Unknown type ' + type);
 }
-
-// Move to Position.ts
-const NEIGHBORS: Position[] =[
-  { x: 0, y: -1 },  // N
-  { x: 1, y: 0 },   // E
-  { x: 0, y: 1 },   // S
-  { x: -1, y: 0 },  // W
-];
 
 function getNeighborsFunction(s: Scanner): (((p: Node) => Edge[])) {
   return function neighbors(p: Node): Edge[] {    
