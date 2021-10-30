@@ -1,7 +1,8 @@
 import { getInput } from '../../utils';
-import { Matrix } from '../../utils/matrix';
-import { equals, Position, readingOrder, sum, toKey } from '../../utils/position';
+import { equals, Position, sum, toKey } from '../../utils/position';
 import { KeyVal } from '../../utils/types';
+
+const PADDING = 50;
 
 enum RegionType {
   ROCKY = 0,
@@ -15,9 +16,14 @@ enum Tool {
   NEITHER
 }
 
-type ToolAndPosition = {
+type Node = {
   tool: Tool,
-  position: Position
+  position: Position,
+};
+
+type Edge = {
+  node: Node,
+  weight: number
 };
 
 class Scanner {
@@ -53,6 +59,10 @@ class Scanner {
     }
     return this._erosionLevels[toKey(p)];
   }
+
+  get target() {
+    return this._target;
+  }
 }
 
 function parseInput(i: string[]):[number, Position] {
@@ -63,18 +73,6 @@ function parseInput(i: string[]):[number, Position] {
 
 function getType(erosionLevel:number): RegionType {
   return erosionLevel  % 3;
-}
-
-function typeToString(type: RegionType): string {
-  switch (type) {
-    case RegionType.NARROW:
-      return '|';
-    case RegionType.WET:
-      return '=';
-    case RegionType.ROCKY:
-      return '.';
-  }
-  throw new Error('Unknown type');
 }
 
 async function partOne() {
@@ -95,18 +93,9 @@ async function partTwo() {
   const [depth, target] = parseInput(await getInput());
   
   const s = new Scanner(depth, target);
-  /*
-  const m = new Matrix<string>();
-  for (let y = 0; y <= target.y; y++) {
-    for (let x = 0; x <= target.x; x++) {
-      m.set({x,y}, typeToString(getType(s.getErosionLevel({x, y}))));
-    }
-  }
 
-  console.log(m.toString());*/
-
-  const start:ToolAndPosition = { position: {x:0, y:0}, tool: Tool.TORCH };
-  const dest:ToolAndPosition = { position: target, tool: Tool.TORCH};
+  const start:Node = { position: {x:0, y:0}, tool: Tool.TORCH };
+  const dest:Node = { position: target, tool: Tool.TORCH};
   const a = dijkstra3d(start, dest, getNeighborsFunction(s));
   console.log(a)
 }
@@ -131,43 +120,28 @@ const NEIGHBORS: Position[] =[
   { x: -1, y: 0 },  // W
 ];
 
+function getNeighborsFunction(s: Scanner): (((p: Node) => Edge[])) {
+  return function neighbors(p: Node): Edge[] {    
+    const positions = NEIGHBORS
+      .map(x => sum(x, p.position))
+      .filter(z => z.y >= 0 && z.x >= 0)
+      .filter(z => z.x < s.target.x + PADDING && z.y < s.target.y + PADDING);
 
-function getNeighborsFunction(s: Scanner): (((p: ToolAndPosition) => ToolAndPosition[])) {
-  return function neighbors(p: ToolAndPosition): ToolAndPosition[] {    
-    const {x, y} = p.position;
-    const positions = NEIGHBORS.map(x => sum(x, p.position)).filter(z => z.y >= 0 && z.x >= 0);
+    const currentPossibleTools = getPossibleTools(getType(s.getErosionLevel(p.position)));
 
-    const g = positions.flatMap(p => {
-      const poss = getPossibleTools(getType(s.getErosionLevel({x, y})));
-      return poss.map<ToolAndPosition>(t => ({position: p, tool: t}));
-    });
+    const g:Edge[] = positions
+      .filter(q=> getPossibleTools(getType(s.getErosionLevel(q))).includes(p.tool))
+      .map(position => ({node: {position, tool: p.tool}, weight: 1}))
+      .concat({node: { position: p.position, tool: currentPossibleTools.find(x => x !== p.tool) as Tool}, weight: 7});
+    
     return g;
   }
 }
 
-/*
-function closest(from: Position, candidates: Position[], m: Matrix): Position | undefined {
-  const nextDistances = candidates.map(x => {
-    return dijkstra(from, x, (node) => neighbors(node).filter(p => m.get(p) === OPEN || equals(p, x))
-    ) || Infinity;
-  });
-  const minDistance = Math.min(...nextDistances);
-  if (minDistance === Infinity) {
-    return undefined;
-  }
-  const c = nextDistances.reduce<number[]>((acc, v, i) => {
-    if (v === minDistance) {
-      return [...acc, i];
-    }
-    return acc;
-  }, []).map(i => candidates[i]).sort(readingOrder);
-  return c[0];
-}*/
+export const toToolAndPosKey = (p:Node):string => JSON.stringify(p);
+export const fromToolAndPosKey = (str:string):Node => JSON.parse(str);
 
-export const toToolAndPosKey = (p:ToolAndPosition):string => JSON.stringify(p);
-export const fromToolAndPosKey = (str:string):ToolAndPosition => JSON.parse(str);
-
-function dijkstra3d(start: ToolAndPosition, dest: ToolAndPosition, neighborsFn: (n: ToolAndPosition) => ToolAndPosition[]): number | undefined {
+function dijkstra3d(start: Node, dest: Node, neighborsFn: (n: Node) => Edge[]): number | undefined {
   const nodes = new Set([toToolAndPosKey(start)]);
   const seenNodes = new Set([toToolAndPosKey(start)]);
   const distances = new Map<string, number>();
@@ -179,21 +153,21 @@ function dijkstra3d(start: ToolAndPosition, dest: ToolAndPosition, neighborsFn: 
 
   while (nodes.size) {
     const closest = [...nodes].reduce(minBy((n:string) => getDist(n)));
-    console.log(fromToolAndPosKey(closest).position)
+    //console.log(fromToolAndPosKey(closest))
     if (dest && closest === toToolAndPosKey(dest)) {
       return distances.get(toToolAndPosKey(dest));
     }
     nodes.delete(closest);
     const neighbors = neighborsFn(fromToolAndPosKey(closest));
-    neighbors.forEach((n:ToolAndPosition) => {
-      const k:string = toToolAndPosKey(n);
+    neighbors.forEach((e:Edge) => {
+      const k:string = toToolAndPosKey(e.node);
       if (!seenNodes.has(k)) {
         seenNodes.add(k);
         nodes.add(k);
       }
 
-      const cost = fromToolAndPosKey(closest).tool === n.tool ? 0 : 7;
-      const alt = getDist(closest) + 1 + cost;
+      //const cost = fromToolAndPosKey(closest).tool === n.tool ? 1 : 7;
+      const alt = getDist(closest) + e.weight;
       if (alt < getDist(k)) {
         distances.set(k, alt);
       }
