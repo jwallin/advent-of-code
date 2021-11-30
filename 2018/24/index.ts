@@ -16,6 +16,7 @@ class Group {
   public army: string;
   public target?: Group;
   public id: number;
+  public boost: number = 0;
 
   private constructor(army: string, numberOfUnits: number, hp: number, weaknesses:string[], immunities: string[], attack: number, attackType: string, initiative:number, id: number) {
     this.army = army;
@@ -44,7 +45,7 @@ class Group {
   }
 
   get effectivePower():number {
-    return this.attack * this.numberOfUnits;
+    return (this.attack + this.boost) * this.numberOfUnits;
   }
 
   get alive():boolean {
@@ -103,17 +104,27 @@ async function partOne() {
     }
   });
 
+  fight(armies);
+  
+  armies.forEach(a => {
+    console.log(a.name);
+    a.groups.forEach(g => console.log(`Group ${g.id} contains ${g.numberOfUnits} units`));
+    console.log(`Total ${a.groups.map(g => g.numberOfUnits).reduce(sum)}`);
+  });
+}
+
+function fight(armies: Army[]):Army[] {
   while (armies.every(a => a.groups.map(x => x.numberOfUnits).reduce(sum) > 0)) {
     // List folks
-    armies.forEach(a => {
+    /*armies.forEach(a => {
       console.log(a.name);
       a.groups.forEach((g, i) => console.log(`Group ${i + 1} contains ${g.numberOfUnits} units`));
-    });
-    console.log('');
+    });*/
+    //console.log('');
 
     // Target selection
     armies.forEach(ar => {
-      const orderedGroups = ar.groups.filter(g => g.alive).sort((a,b) => {
+      const orderedGroups = ar.groups.filter(g => g.alive).sort((a, b) => {
         const powerDiff = Math.sign(b.effectivePower - a.effectivePower);
         if (powerDiff !== 0) {
           return powerDiff;
@@ -123,10 +134,15 @@ async function partOne() {
       const candidates = new Set(armies.filter(c => c !== ar).flatMap(c => c.groups));
       orderedGroups.forEach(g => g.selectTarget(candidates));
     });
-    console.log('');
-    
+
+    //If no targets where selected, bail out
+    if (armies.map(a => a.groups.filter(g => g.target !== undefined).length).reduce(sum) === 0) {
+      break;
+    }    
+    //console.log('');
+
     // Attack
-    const groupsByInitiative = armies.flatMap(a => a.groups).sort((a,b) => Math.sign(b.initiative - a.initiative));
+    const groupsByInitiative = armies.flatMap(a => a.groups).sort((a, b) => Math.sign(b.initiative - a.initiative));
     groupsByInitiative.forEach(g => {
       const target = g.target;
       if (!target) {
@@ -135,21 +151,67 @@ async function partOne() {
       const kills = Math.min(Math.floor(g.calcAttack(target) / target.hp), target.numberOfUnits);
       target.numberOfUnits -= kills;
       g.target = undefined;
-      console.log(`${g.army} group ${g.id} attacks defending group ${target.id}, killing ${kills} units`);
+     // console.log(`${g.army} group ${g.id} attacks defending group ${target.id}, killing ${kills} units`);
     });
-    console.log('')
+    //console.log('');
   }
-  
-  armies.forEach(a => {
-    console.log(a.name);
-    a.groups.forEach(g => console.log(`Group ${g.id} contains ${g.numberOfUnits} units`));
-    console.log(`Total ${a.groups.map(g => g.numberOfUnits).reduce(sum)}`);
-  });
+  return armies;
 }
 
 async function partTwo() {
-  const input = (await getInput()).map(Number);
+  const input = (await getInput());
+
+
+  let l = 0;
+  let r = 10000;
+  while (l < r) {
+
+    const [immune, infection] = splitArray(input.concat(), '').map<Army>((a) => {
+      const name = a.shift() || '';
+      return {
+        name,
+        groups: a.map((x, i) => Group.parseGroup(x, name, i + 1))
+      }
+    });
+
+    const m = Math.floor((l + r) / 2);
+    console.log(`Try ${m}`);
+
+    immune.groups.forEach(g => g.boost = m);
+    fight([immune, infection]);
+
+    const immuneWins = immune.groups.some(x => x.alive) && !infection.groups.some(x => x.alive);
+    if (!immuneWins) {
+      l = m + 1;
+    } else {
+      r = m;
+    }
+  
+    if (l === r) {
+      console.log(`Lowest boost ${l}`);
+
+      const [immune, infection] = splitArray(input.concat(), '').map<Army>((a) => {
+        const name = a.shift() || '';
+        return {
+          name,
+          groups: a.map((x, i) => Group.parseGroup(x, name, i + 1))
+        }
+      });
+
+
+      immune.groups.forEach(g => g.boost = l);
+      fight([immune, infection]);
+          
+      [immune, infection].forEach(a => {
+        console.log(a.name);
+        a.groups.forEach(g => console.log(`Group ${g.id} contains ${g.numberOfUnits} units`));
+        console.log(`Total ${a.groups.map(g => g.numberOfUnits).reduce(sum)}`);
+      });
+    }
+  }
+
+  console.log('done');
 }
   
 
-partOne();
+partTwo();
