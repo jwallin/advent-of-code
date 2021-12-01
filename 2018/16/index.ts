@@ -1,89 +1,88 @@
 import { arrayMatch, getInput, arrayIndexOf, splitArrayBy, intersection } from '../../utils';
 import { KeyVal } from '../../utils/types';
 
-type Quadruple<T> = [T, T, T, T];
-
 type SampleInstruction = {
-  before: Quadruple<number>,
-  instruction: Quadruple<number>,
-  after: Quadruple<number>
+  before: number[],
+  instruction: number[],
+  after: number[]
 }
 
-type OpFunction = (r: Quadruple<number>, a:number, b:number, c:number) => void
+type OpFunction = (r: number[], a:number, b:number, c:number) => void
 
 function parseSample(input:string[]): SampleInstruction {
   const r = /\w+:\s+\[(.+)\]$/
   return {
-    before: (input[0].match(r))?.[1].split(', ').map(Number) as Quadruple<number>,
+    before: (input[0].match(r))?.[1].split(', ').map(Number) as number[],
     instruction: mapInstruction(input[1]),
-    after: (input[2].match(r))?.[1].split(', ').map(Number) as Quadruple<number>
+    after: (input[2].match(r))?.[1].split(', ').map(Number) as number[]
   };
 }
 
 const operations:KeyVal<OpFunction> = {
-  addr: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  addr: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] + r[b];
   },
-  addi: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  addi: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] + b;
   },
 
-  mulr: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  mulr: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] *  r[b];
   },
-  muli: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  muli: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] * b;
   },
 
-  banr: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  banr: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] & r[b];
   },
-  bani: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  bani: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] & b;
   },
 
-  borr: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  borr: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] | r[b];
   },
-  bori: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  bori: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] | b;
   },
   
-  setr: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  setr: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a];
   },
-  setti: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  setti: (r: number[], a:number, b:number, c:number) => {
     r[c] = a;
   },
 
-  gtir: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  gtir: (r: number[], a:number, b:number, c:number) => {
     r[c] = a > r[b] ? 1 : 0;
   },
-  gtri: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  gtri: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] > b ? 1 : 0;
   },
-  gtrr: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  gtrr: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] > r[b] ? 1 : 0;
   },
   
-  eqir: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  eqir: (r: number[], a:number, b:number, c:number) => {
     r[c] = a === r[b] ? 1 : 0;
   },
-  eqri: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  eqri: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] === b ? 1 : 0;
   },
-  eqrr: (r: Quadruple<number>, a:number, b:number, c:number) => {
+  eqrr: (r: number[], a:number, b:number, c:number) => {
     r[c] = r[a] === r[b] ? 1 : 0;
   }
 };
 
-function mapInstruction(input: string): Quadruple<number> {
-  return input.split(' ').map(Number) as Quadruple<number>;
+function mapInstruction(input: string): number[] {
+  return input.split(' ').map(Number);
 }
 
-function callOp(registers:Quadruple<number>, fn:OpFunction, a:number, b:number, c:number) {
-  const newRegisters = [...registers] as Quadruple<number>;
-  fn(newRegisters, a, b, c);
+function callOp(registers:number[], fn:OpFunction, ...args:number[]) {
+  const newRegisters = [...registers];
+  const [a, b, c] = args;
+  fn(newRegisters, a,b,c);
   return newRegisters;
 }
 
@@ -95,7 +94,7 @@ function getPossibleOps(s: SampleInstruction) {
   }).map(([key,]) => key);
 }
 
-function getSamplesAndInstructions(input:string[]):[SampleInstruction[], Quadruple<number>[]] {
+function getSamplesAndInstructions(input:string[]):[SampleInstruction[], number[][]] {
   // Split into two sections
   const splitValue = ['', '', ''];
   const i = arrayIndexOf(input, splitValue) || input.length;
@@ -132,11 +131,12 @@ async function partTwo() {
   const [samples, instructions] = getSamplesAndInstructions(input);  
   const possibleOps = samples.map<[number, string[]]>(s => [s.instruction[0], getPossibleOps(s)]);
   const opCodes: KeyVal<string> = mapOpCodes(possibleOps);
-  const registers:Quadruple<number> = [0, 0, 0, 0];
+  const registers:number[] = [0, 0, 0, 0];
   instructions.forEach(i => {
     const [code , ...args] = i;
     const fn = operations[opCodes[code]];
-    fn(registers, ...args);
+    const [a, b, c] = args;
+    fn(registers, a, b, c);
   });
   console.log(registers)
 }

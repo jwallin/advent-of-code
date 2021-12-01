@@ -32,7 +32,7 @@ export class Computer {
       if (instruction.hasRun) {
         return false;
       }
-      let jump: number = 1;
+      let jump = 1;
       switch (instruction.op) {
         case INSTRUCTIONS.JMP:
           jump = instruction.parameter;

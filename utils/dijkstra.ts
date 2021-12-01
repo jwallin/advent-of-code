@@ -34,37 +34,37 @@ export function dijkstra(start: Position, dest: Position, neighborsFn: (n: Posit
     return undefined;
   }
 
-  export function shortestPath(source:Position, target:Position,  neighborsFn: (n: Position) => Position[]): Position[] | undefined{
-    if (equals(source, target)) {
-      return [];
-    }
-    const queue = [ toKey(source) ];
-    const visited = new Set([toKey(source)]);
-    const predecessor:KeyVal<string> = {};
-    let tail = 0;
-    while (tail < queue.length) {
-      let u = queue[tail++];  // Pop a vertex off the queue.
-      const neighbors = neighborsFn(fromKey(u));
-      for (let i = 0; i < neighbors.length; ++i) {
-        const v = neighbors[i];
-        const vKey = toKey(v);
-        if (visited.has(vKey)) {
-          continue;
-        }
-        visited.add(vKey);
-        if (equals(v, target)) {   // Check if the path is complete.
-          const path = [ v ];   // If so, backtrack through the path.
-          while (!equals(fromKey(u), source)) {
-            path.push(fromKey(u));
-            u = predecessor[u];          
-          }
-          path.push(fromKey(u));
-          path.reverse();
-          return path;
-        }
-        predecessor[vKey] = u;
-        queue.push(vKey);
-      }
-    }
-    return undefined;
+export function shortestPath(source:Position, target:Position,  neighborsFn: (n: Position) => Position[]): Position[] | undefined{
+  if (equals(source, target)) {
+    return [];
   }
+  const queue = [ toKey(source) ];
+  const visited = new Set([toKey(source)]);
+  const predecessor:KeyVal<string> = {};
+  let tail = 0;
+  while (tail < queue.length) {
+    let u = queue[tail++];  // Pop a vertex off the queue.
+    const neighbors = neighborsFn(fromKey(u));
+    for (let i = 0; i < neighbors.length; ++i) {
+      const v = neighbors[i];
+      const vKey = toKey(v);
+      if (visited.has(vKey)) {
+        continue;
+      }
+      visited.add(vKey);
+      if (equals(v, target)) {   // Check if the path is complete.
+        const path = [ v ];   // If so, backtrack through the path.
+        while (!equals(fromKey(u), source)) {
+          path.push(fromKey(u));
+          u = predecessor[u];          
+        }
+        path.push(fromKey(u));
+        path.reverse();
+        return path;
+      }
+      predecessor[vKey] = u;
+      queue.push(vKey);
+    }
+  }
+  return undefined;
+}
