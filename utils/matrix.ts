@@ -36,6 +36,10 @@ export class Matrix<T = any> {
     return this._matrix;
   }
 
+  get columns(): T[][] {
+    return this.rotate().rows;
+  }
+
   fill(from: Position, to: Position, value: T, overwrite = true) {
     for (let y = from.y; y <= to.y; y++) {
       for (let x = from.x; x <= to.x; x++) {
