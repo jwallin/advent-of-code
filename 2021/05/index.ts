@@ -6,7 +6,6 @@ function parsePoints(s:string) {
   return s.split('->').map(x => x.split(',').map(Number)).map<Position>(([x, y]) => ({x, y}));
 }
 
-
 function calcIntersections(input: Position[][]) {
   const matrix = new Matrix<number>();
   matrix.fill(min(input.flat()), max(input.flat()), 0);
@@ -24,9 +23,9 @@ function calcIntersections(input: Position[][]) {
       }
     } else {
       const k = (p2.y - p1.y) / (p2.x - p1.x);
-      let m = p1.x - k * p1.y;
+      const m = p1.x - k * p1.y;
       for (let y = p1.y; y <= p2.y; y++) {
-        let x = k * y + m;
+        const x = k * y + m;
 
         matrix.set({ x, y }, (matrix.get({ x, y }) || 0) + 1);
       }
