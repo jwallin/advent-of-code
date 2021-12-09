@@ -7,7 +7,7 @@ const TREES = '|';
 const LUMBERYARD = '#';
 
 function getNextValue(m:Matrix<string>, p:Position) {
-  const adjacentValues = m.adjacentValues(p);
+  const adjacentValues = m.adjacentAndDiagonalValues(p);
   switch (m.get(p)) {
     case OPEN:
       return (adjacentValues.filter(x => x === TREES).length >= 3) ? TREES : OPEN;

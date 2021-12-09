@@ -1,13 +1,17 @@
 import { Position, sum } from './position';
 
-const DIRECTIONS: Position[] =[
+const ADJACENT: Position[] =[
   { x: 0, y: -1 },  // N
-  { x: 1, y: -1 },  // NE
   { x: 1, y: 0 },   // E
-  { x: 1, y: 1 },   // SE
   { x: 0, y: 1 },   // S
-  { x: -1, y: 1 },  // SW
   { x: -1, y: 0 },  // W
+];
+
+const ADJACENT_AND_DIAGONAL: Position[] =[
+  ...ADJACENT,
+  { x: 1, y: -1 },  // NE
+  { x: 1, y: 1 },   // SE
+  { x: -1, y: 1 },  // SW
   { x: -1, y: -1 }, // NW
 ];
 
@@ -93,11 +97,19 @@ export class Matrix<T = any> {
   }
 
   adjacentPositions(p: Position): Position[] {
-    return DIRECTIONS.map(d => sum(p, d));
+    return ADJACENT.map(d => sum(p, d));
   }
 
   adjacentValues(p: Position): (T | undefined)[] {
     return this.adjacentPositions(p).map(p => this.get(p));
+  }
+
+  adjacentAndDiagonalPositions(p: Position): Position[] {
+    return ADJACENT_AND_DIAGONAL.map(d => sum(p, d));
+  }
+
+  adjacentAndDiagonalValues(p: Position): (T | undefined)[] {
+    return this.adjacentAndDiagonalPositions(p).map(p => this.get(p));
   }
 
   equals(m: Matrix<T>): boolean {
@@ -106,9 +118,9 @@ export class Matrix<T = any> {
 
   visibleValues(pos: Position, predicate: (x: any) => boolean): T[] {
     //Walk in each direction, until unvalid pos
-    return DIRECTIONS.reduce((acc: any[], d) => {
+    return ADJACENT_AND_DIAGONAL.reduce((acc: any[], d) => {
       let newPos = sum(pos, d);
-      while(this._isValidPosition(newPos) && this.get(newPos) !== undefined) {
+      while (this._isValidPosition(newPos) && this.get(newPos) !== undefined) {
         const val = this.get(newPos);
         if (predicate(val)) {
           return [...acc, val];
