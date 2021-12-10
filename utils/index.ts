@@ -1,4 +1,5 @@
 import { lines } from './lines';
+import { KeyVal } from './types';
 
 export const toChars = (value:string): string[] => [...value];
 export const countDigits = (input: number): number => toChars(String(input)).length;
@@ -83,4 +84,11 @@ export function splitArrayBy<T>(arr:T[], val: T): T[][] {
   arrs.push(currArr);
   return arrs.filter(x => x.length > 0);
 
+}
+
+export function flipObject(o: KeyVal<any>): KeyVal<string> {
+  return Object.keys(o).reduce<KeyVal<string>>((ret, key) => {
+    ret[o[key]] = key;
+    return ret;
+  }, {});
 }
