@@ -218,28 +218,23 @@ async function partTwo() {
   const matrix = await partOne();
 
   // Trim matrixes
-  matrix.asArray().forEach((p:Position) => {
+  matrix.asArray().filter(p => matrix.has(p)).forEach((p:Position) => {
     const data = matrix.get(p);
-    if (!data) {
-      return;
-    }
     matrix.set(p, data.trim());
   });
 
   // Draw large matrix
   const rows:string[][] = [];
-  matrix.asArray().forEach((p:Position) => {
+  matrix.asArray().filter(p => matrix.has(p)).forEach((p:Position) => {
     const m = matrix.get(p);
-    if (m !== undefined) {
-      const start = m.rows.length; 
-      m.rows.forEach((r, i) => {
-        const rowIndex = i + p.y * start;
-        if (!rows[rowIndex]) {
-          rows[rowIndex] = [];
-        }
-        rows[rowIndex].push(...r);
-      });
-    }
+    const start = m.rows.length; 
+    m.rows.forEach((r, i) => {
+      const rowIndex = i + p.y * start;
+      if (!rows[rowIndex]) {
+        rows[rowIndex] = [];
+      }
+      rows[rowIndex].push(...r);
+    });
   });
 
   const largeMatrix = new Matrix<string>(rows).flipVertically();

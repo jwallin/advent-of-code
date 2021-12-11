@@ -58,9 +58,19 @@ export class Matrix<T = any> {
     this._getOrSetRow(pos.y)[pos.x] = value;
   }
 
-  get(pos: Position): T | undefined {
-    if (!this._isValidPosition(pos) || this._matrix[pos.y] === undefined) {
-      return undefined;
+  has(pos: Position): boolean {
+    return this._isValidPosition(pos) 
+      && this._matrix[pos.y] !== undefined
+      && this._matrix[pos.y][pos.x] !== undefined;
+  }
+
+  get(pos: Position, def?: T | undefined): T {
+    if (!this.has(pos)) {
+      if (def !== undefined) {
+        return def;
+      } else {
+        throw new Error('Invalid position');
+      }
     }
     return this._matrix[pos.y][pos.x];
   }
@@ -89,7 +99,7 @@ export class Matrix<T = any> {
   }
 
   values(): (T | undefined)[] {
-    return this.asArray().map((p:Position) => this.get(p));
+    return this.asArray().filter(p => this.has(p)).map(p => this.get(p));
   }
 
   clone(): Matrix {
@@ -101,7 +111,7 @@ export class Matrix<T = any> {
   }
 
   adjacentValues(p: Position): (T | undefined)[] {
-    return this.adjacentPositions(p).map(p => this.get(p));
+    return this.adjacentPositions(p).filter(x => this.has(x)).map(p => this.get(p));
   }
 
   adjacentAndDiagonalPositions(p: Position): Position[] {
@@ -109,7 +119,7 @@ export class Matrix<T = any> {
   }
 
   adjacentAndDiagonalValues(p: Position): (T | undefined)[] {
-    return this.adjacentAndDiagonalPositions(p).map(p => this.get(p));
+    return this.adjacentAndDiagonalPositions(p).filter(x => this.has(x)).map(p => this.get(p));
   }
 
   equals(m: Matrix<T>): boolean {

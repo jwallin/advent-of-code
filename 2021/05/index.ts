@@ -14,12 +14,12 @@ function calcIntersections(input: Position[][]) {
     if (p1.x === p2.x) {
       const x = p1.x;
       for (let y = p1.y; y <= p2.y; y++) {
-        matrix.set({ x, y }, (matrix.get({ x, y }) || 0) + 1);
+        matrix.set({ x, y }, matrix.get({ x, y }, 0) + 1);
       }
     } else if (p1.y === p2.y) {
       const y = p1.y;
       for (let x = p1.x; x <= p2.x; x++) {
-        matrix.set({ x, y }, (matrix.get({ x, y }) || 0) + 1);
+        matrix.set({ x, y }, matrix.get({ x, y }, 0) + 1);
       }
     } else {
       const k = (p2.y - p1.y) / (p2.x - p1.x);
@@ -27,7 +27,7 @@ function calcIntersections(input: Position[][]) {
       for (let y = p1.y; y <= p2.y; y++) {
         const x = k * y + m;
 
-        matrix.set({ x, y }, (matrix.get({ x, y }) || 0) + 1);
+        matrix.set({ x, y }, matrix.get({ x, y },  0) + 1);
       }
     }
   });

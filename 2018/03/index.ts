@@ -27,7 +27,7 @@ async function partOne() {
   claims.forEach(c => {
     for(let x = c.x; x < c.x + c.width; x++) {
       for (let y = c.y; y < c.y + c.height; y++) {
-        const v = matrix.get({x, y}) || 0;
+        const v = matrix.get({x, y}, 0);
         matrix.set({x, y}, v + 1);
       }
     }
@@ -42,7 +42,7 @@ async function partTwo() {
   claims.forEach(c => {
     for(let x = c.x; x < c.x + c.width; x++) {
       for (let y = c.y; y < c.y + c.height; y++) {
-        const v = matrix.get({x, y}) || 0;
+        const v = matrix.get({x, y}, 0);
         matrix.set({x, y}, v + 1);
       }
     }
@@ -53,7 +53,7 @@ async function partTwo() {
     let intact = true;
     for(let x = c.x; x < c.x + c.width; x++) {
       for (let y = c.y; y < c.y + c.height; y++) {
-        if ((matrix.get({x, y}) || 0) > 1) {
+        if ((matrix.get({x, y}, 0)) > 1) {
           intact = false;
         }
       }

@@ -95,10 +95,10 @@ async function partOne() {
 
 function createCarts(m: Matrix<string>):Set<Cart> {
   return new Set(m.asArray()
-    .filter(p => m.get(p) !== undefined)
-    .filter(p => Object.keys(DIRECTIONS).includes(m.get(p) as string))
+    .filter(p => m.has(p))
+    .filter(p => Object.keys(DIRECTIONS).includes(m.get(p)))
     .map(p => {
-      const val = m.get(p) as string;
+      const val = m.get(p);
       const [dir, track] = DIRECTIONS[val];
 
       // Update track

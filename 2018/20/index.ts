@@ -4,7 +4,7 @@ import { Position, sum } from '../../utils/position';
 
 function addPosition(m:Matrix<number>, p:Position, direction: Position) {
     const newP = sum(p, direction);
-    const dist = Math.min(m.get(p) as number + 1, m.get(newP) || Infinity);
+    const dist = Math.min(m.get(p) + 1, m.get(newP, Infinity));
     m.set(newP, dist);
     return newP;
 }

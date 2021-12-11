@@ -3,11 +3,8 @@ import { Matrix } from '../../utils/matrix';
 import { equals, Position } from '../../utils/position';
 
 function getLowPoints(m: Matrix<number>) {
-  return m.asArray().filter(x => {
-    const val = m.get(x) as number;
-    if (val === undefined) {
-      return false;
-    }
+  return m.asArray().filter(x => m.has(x)).filter(x => {
+    const val = m.get(x);
 
     const adj = m.adjacentValues(x).filter(v => v !== undefined) as number[];
     return adj.every(v => v > val);
@@ -22,7 +19,7 @@ async function partOne() {
   const input = (await getInput()).map(x => x.split('').map(Number));
   const m = new Matrix(input);
   const lowPoints = getLowPoints(m);
-  console.log(lowPoints.map(x => 1 + (m.get(x) as number)).reduce(sum))
+  console.log(lowPoints.map(x => 1 + m.get(x)).reduce(sum))
 }
 
 async function partTwo() {
@@ -35,7 +32,7 @@ async function partTwo() {
     
     let newLocations = basin;
     while (newLocations.length > 0) {
-      const adj = basin.flatMap(x => m.adjacentPositions(x)).filter(x => m.get(x) !== undefined && m.get(x) !== 9);
+      const adj = basin.flatMap(x => m.adjacentPositions(x)).filter(x => m.has(x) && m.get(x) !== 9);
     
       newLocations = unique(adj.filter(x => !basin.some(y => equals(x, y))));
       basin.push(...newLocations);
