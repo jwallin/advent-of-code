@@ -64,7 +64,7 @@ function getVariations(m:Matrix):Matrix[] {
       a = a.flipHorizontally();
     }
     for (let i = 0; i < 4; i ++) {
-      a = a.rotate();
+      a = a.rotateRight();
       if (!l.some(x => x.draw() === a.draw())) {
         l.push(a);
       }

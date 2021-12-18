@@ -24,7 +24,7 @@ export class Matrix<T = any> {
 
   private _getOrSetRow(y: number) {
     let row = this._matrix[y];
-    if (row === undefined) {
+    if (!row) {
       row = this._matrix[y] = [];
     }
     return row;
@@ -41,13 +41,13 @@ export class Matrix<T = any> {
   }
 
   get columns(): T[][] {
-    return this.rotate().rows;
+    return this.rotateRight().rows;
   }
 
   fill(from: Position, to: Position, value: T, overwrite = true) {
     for (let y = from.y; y <= to.y; y++) {
       for (let x = from.x; x <= to.x; x++) {
-        if (overwrite || this.get({x,y}) === undefined) {
+        if (overwrite || !this.has({x,y})) {
           this.set({x,y}, value);  
         }
       }
@@ -69,7 +69,7 @@ export class Matrix<T = any> {
       if (def !== undefined) {
         return def;
       } else {
-        throw new Error('Invalid position');
+        throw new Error(`Invalid position x: ${pos.x}, y: ${pos.y}`);
       }
     }
     return this._matrix[pos.y][pos.x];
@@ -102,8 +102,9 @@ export class Matrix<T = any> {
     return this.asArray().filter(p => this.has(p)).map(p => this.get(p));
   }
 
-  clone(): Matrix {
-    return new Matrix(JSON.parse(JSON.stringify(this._matrix)));
+  clone(): Matrix<T> {
+    const c = JSON.parse(JSON.stringify(this._matrix)).map((x:any) => x === null ? undefined : x);
+    return new Matrix(c);
   }
 
   adjacentPositions(p: Position): Position[] {
@@ -141,26 +142,37 @@ export class Matrix<T = any> {
     }, []);
   }
 
-  flipVertically(): Matrix {
-    const clone = this.clone();
-    clone.rows.reverse();
-    return clone;
+  flipVertically(): Matrix<T> {
+    return new Matrix(this.rows.slice().reverse());
   }
 
-  flipHorizontally(): Matrix {
+  flipHorizontally(): Matrix<T> {
     const clone = this.clone();
-    clone.rows.forEach(r => r.reverse());
+    clone.rows.filter(r => !!r).forEach(r => r.reverse());
     return clone;
   }
-
-  rotate(): Matrix {
-   const a = new Matrix();
-   for (let y = 0; y < this.rows.length; y++) {
-    for (let x = 0; x < this.rows[y].length; x++) {
-      a.set({x: y, y: x}, this.get({x, y}));
+  
+  private flipXandY(): Matrix<T> {
+    const a = new Matrix<T>();
+    for (let y = 0; y < this.rows.length; y++) {
+      if (!this.rows[y]) {
+        continue;
+      }
+      for (let x = 0; x < this.rows[y].length; x++) {
+        if (this.has({x, y})) {
+          a.set({x: y, y: x}, this.get({x, y}));
+        }
+      }
     }
-   }
-   return a.flipHorizontally();
+    return a;
+  }
+
+  rotateRight(): Matrix<T> {
+   return this.flipXandY().flipHorizontally();
+  }
+
+  rotateLeft(): Matrix<T> {
+    return this.flipXandY().flipVertically();
   }
 
   getRow(i:number):T[] {
@@ -185,5 +197,12 @@ export class Matrix<T = any> {
 
   positionsWithValue(value: T) {
     return this.asArray().filter(x => this.get(x) === value);
+  }
+
+  maxPos(): Position {
+    return {
+      x: Math.max(...this.columns.map(x => x.length)) -1,
+      y: this.rows.length - 1
+    }
   }
 }
