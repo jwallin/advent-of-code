@@ -1,5 +1,3 @@
-import { KeyVal } from "./types";
-
 export class LinkedList<T> {
     private _value: T;
     private _left: LinkedList<T> | undefined;

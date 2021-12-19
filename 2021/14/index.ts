@@ -1,7 +1,6 @@
 import { getInput } from '../../utils';
 import { KeyVal } from '../../utils/types';
 
-
 function run(input: string[], steps: number) {
   const template = input.shift() as string;
   input.shift();
