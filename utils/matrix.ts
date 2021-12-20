@@ -201,8 +201,16 @@ export class Matrix<T = any> {
 
   maxPos(): Position {
     return {
-      x: Math.max(...this.columns.map(x => x.length)) -1,
+      x: Math.max(...this.rows.map(x => x.length)) - 1,
       y: this.rows.length - 1
     }
+  }
+
+  pad(x: T, n: number = 1): Matrix<T> {
+    const w = Math.max(...this.rows.map(x => x.length));
+    const insertRow = Array(w).fill(x);
+    const rows = [...Array(n).fill(insertRow.slice()), ...this.rows.slice(), ...Array(n).fill(insertRow.slice())];
+    const insertCol = Array(n).fill(x);
+    return new Matrix(rows.map(r => [...insertCol, ...r, ...insertCol]));
   }
 }
