@@ -3,7 +3,7 @@ import { Matrix } from '../../utils/matrix';
 import { Position, readingOrder } from '../../utils/position';
 
 function enhancePixel(p:Position, img:Matrix<string>, algo: string[]): string {
-  const bin = [p, ...img.adjacentAndDiagonalPositions(p)].sort(readingOrder).map(x => img.get(x) === '#' ? '1' : '0').join('');
+  const bin = [p, ...Matrix.adjacentAndDiagonalPositions(p)].sort(readingOrder).map(x => img.get(x) === '#' ? '1' : '0').join('');
   const dec = parseInt(bin, 2);
   return algo[dec];
 }
@@ -33,7 +33,6 @@ async function partOne() {
 
 async function partTwo() {
   const img = enhanceImage(await getInput(), 50);
-
   console.log(img.values().filter(x => x === '#').length)
 }
   

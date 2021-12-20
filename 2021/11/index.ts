@@ -42,7 +42,7 @@ function step(m: Matrix<number>) {
   while (queue.length > 0) {
     const f = queue.shift() as Position;
     // Increase adjacent
-    const adj = m.adjacentAndDiagonalPositions(f).filter(x => m.has(x));
+    const adj = Matrix.adjacentAndDiagonalPositions(f).filter(x => m.has(x));
     adj.forEach(a => m.set(a, m.get(a) + 1));
     //If any new flashers, add to queue
     const found = adj

@@ -32,7 +32,7 @@ async function partTwo() {
     
     let newLocations = basin;
     while (newLocations.length > 0) {
-      const adj = basin.flatMap(x => m.adjacentPositions(x)).filter(x => m.has(x) && m.get(x) !== 9);
+      const adj = basin.flatMap(x => Matrix.adjacentPositions(x)).filter(x => m.has(x) && m.get(x) !== 9);
     
       newLocations = unique(adj.filter(x => !basin.some(y => equals(x, y))));
       basin.push(...newLocations);

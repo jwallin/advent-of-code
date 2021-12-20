@@ -107,20 +107,20 @@ export class Matrix<T = any> {
     return new Matrix(c);
   }
 
-  adjacentPositions(p: Position): Position[] {
+  static adjacentPositions(p: Position): Position[] {
     return ADJACENT.map(d => sum(p, d));
   }
 
   adjacentValues(p: Position): (T | undefined)[] {
-    return this.adjacentPositions(p).filter(x => this.has(x)).map(p => this.get(p));
+    return Matrix.adjacentPositions(p).filter(x => this.has(x)).map(p => this.get(p));
   }
 
-  adjacentAndDiagonalPositions(p: Position): Position[] {
+  static adjacentAndDiagonalPositions(p: Position): Position[] {
     return ADJACENT_AND_DIAGONAL.map(d => sum(p, d));
   }
 
   adjacentAndDiagonalValues(p: Position): (T | undefined)[] {
-    return this.adjacentAndDiagonalPositions(p).filter(x => this.has(x)).map(p => this.get(p));
+    return Matrix.adjacentAndDiagonalPositions(p).filter(x => this.has(x)).map(p => this.get(p));
   }
 
   equals(m: Matrix<T>): boolean {

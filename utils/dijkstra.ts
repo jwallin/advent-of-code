@@ -1,38 +1,43 @@
 import { equals, fromKey, Position, toKey } from "./position";
 import { KeyVal } from "./types";
 
-export function dijkstra(start: Position, dest: Position, neighborsFn: (n: Position) => Position[]): number | undefined {
-    const nodes = new Set([toKey(start)]);
-    const seenNodes = new Set([toKey(start)]);
-    const distances = new Map<string, number>();
-  
-    const minBy = (cb: { (n: string): number; (arg0: string): number; }) => (a: string, b: string) => (cb(b) < cb(a) ? b : a);
-    const getDist = (key: string): number => (distances.has(key) ? distances.get(key) as number : Infinity);
-  
-    distances.set(toKey(start), 0);
-  
-    while (nodes.size) {
-      const closest = [...nodes].reduce(minBy((n:string) => getDist(n)));
-      if (dest && closest === toKey(dest)) {
-        return distances.get(toKey(dest));
-      }
-      nodes.delete(closest);
-      const neighbors = neighborsFn(fromKey(closest));
-      neighbors.forEach((n:Position) => {
-        const k:string = toKey(n);
-        if (!seenNodes.has(k)) {
-          seenNodes.add(k);
-          nodes.add(k);
-        }
-  
-        const alt = getDist(closest) + 1;
-        if (alt < getDist(k)) {
-          distances.set(k, alt);
-        }
-      });
+
+export function weightedDijkstra(start: Position, dest: Position, neighborsFn: (n: Position) => [Position, number][]): number | undefined {
+  const nodes = new Set([toKey(start)]);
+  const seenNodes = new Set([toKey(start)]);
+  const distances = new Map<string, number>();
+
+  const minBy = (cb: { (n: string): number; (arg0: string): number; }) => (a: string, b: string) => (cb(b) < cb(a) ? b : a);
+  const getDist = (key: string): number => (distances.has(key) ? distances.get(key) as number : Infinity);
+
+  distances.set(toKey(start), 0);
+
+  while (nodes.size) {
+    const closest = [...nodes].reduce(minBy((n:string) => getDist(n)));
+    if (dest && closest === toKey(dest)) {
+      return distances.get(toKey(dest));
     }
-    return undefined;
+    nodes.delete(closest);
+    const neighbors = neighborsFn(fromKey(closest));
+    neighbors.forEach(([n, d]) => {
+      const k:string = toKey(n);
+      if (!seenNodes.has(k)) {
+        seenNodes.add(k);
+        nodes.add(k);
+      }
+
+      const alt = getDist(closest) + d;
+      if (alt < getDist(k)) {
+        distances.set(k, alt);
+      }
+    });
   }
+  return undefined;
+}
+
+export function dijkstra(start: Position, dest: Position, neighborsFn: (n: Position) => Position[]): number | undefined {
+  return weightedDijkstra(start, dest, (n) => neighborsFn(n).map(x => [x, 1]));
+}
 
 export function shortestPath(source:Position, target:Position,  neighborsFn: (n: Position) => Position[]): Position[] | undefined{
   if (equals(source, target)) {
