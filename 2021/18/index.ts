@@ -22,8 +22,6 @@ function explode(s:string):string {
         open--;
       }
     }
-    
-  
   }
   return s;
 }
@@ -74,7 +72,7 @@ function magnitude(s:snailfish | number):number {
   return 3 * magnitude(a) + 2 * magnitude(b)
 }
 
-function add(a: String, b: String):string {
+function add(a: string, b: string):string {
   let sum = `[${a},${b}]`;
   while (true) {
     const exploded = explode(sum);
@@ -93,7 +91,7 @@ function add(a: String, b: String):string {
   }
 
   return sum;
-};
+}
 
 const toSnailFish = (s:string):snailfish => eval(s) as snailfish;
 

@@ -12,8 +12,8 @@ export const subtract = (a: number, b: number): number => a - b;
 export const multiply = (a: number, b: number): number => a * b;
 export const intify = (input: string[]): (string | number)[] => input.map(s => isNaN(Number(s)) ? s : Number(s));
 
-export const pairs = (array: number[]): number[][] => Array.from(combinations(array, 2));
-export const triplets = (array:number[]): number[][] => Array.from(combinations(array, 3));
+export const pairs = <T>(array: T[]): T[][] => Array.from(combinations(array, 2));
+export const triplets = <T>(array:T[]): T[][] => Array.from(combinations(array, 3));
 
 export const getInput = async (filename:string = 'input.txt'):Promise<string[]> => await lines(filename);
 
@@ -45,7 +45,7 @@ export const intersection = <T>(...a:T[][]):T[] => a.reduce((a, b) => a.filter(x
 
 export const cartesian = (...a:any[]) => a.reduce((a:any[], b:any[]):any[] => a.flatMap((d:any) => b.map((e:any) => [d, e].flat())));
 
-export function* combinations(array: number[], k:number, start:number = 0): Generator<number[]> {
+export function* combinations<T>(array: T[], k:number, start:number = 0): Generator<T[]> {
   if (k === 1 || start == array.length) {
     for(let i = start; i < array.length; i++) {
       yield [array[i]];
