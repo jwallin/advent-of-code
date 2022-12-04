@@ -110,3 +110,14 @@ export const sortAscending = (a: number, b: number): 1 | -1 | 0 => {
   }
   return 0;
 };
+
+export const chunkArray = <T>(arr:T[], size: number): T[][] => {
+  return arr.reduce<T[][]>((acc, item, i) => {
+    const c = Math.floor(i / size);
+    if (acc[c] === undefined) {
+      acc[c] = [];
+    }
+    acc[c].push(item);
+    return acc;
+  }, []);
+}
