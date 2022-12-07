@@ -121,3 +121,14 @@ export const chunkArray = <T>(arr:T[], size: number): T[][] => {
     return acc;
   }, []);
 }
+
+export function between(a:number, b:number, inclusive:boolean = true):number[] {
+  const start = Math.min(a, b);
+  const end = Math.max(a, b);
+  const arr = [...Array(end - start + 1).keys()].map(k => k + start);
+  if (!inclusive) {
+    arr.shift();
+    arr.pop();
+  }
+  return arr;
+}
