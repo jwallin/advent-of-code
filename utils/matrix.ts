@@ -1,6 +1,6 @@
 import { Position, sum } from './position';
 
-const ADJACENT: Position[] =[
+export const ADJACENT: Position[] =[
   { x: 0, y: -1 },  // N
   { x: 1, y: 0 },   // E
   { x: 0, y: 1 },   // S
