@@ -7,7 +7,7 @@ export const ADJACENT: Position[] =[
   { x: -1, y: 0 },  // W
 ];
 
-const ADJACENT_AND_DIAGONAL: Position[] =[
+export const ADJACENT_AND_DIAGONAL: Position[] =[
   ...ADJACENT,
   { x: 1, y: -1 },  // NE
   { x: 1, y: 1 },   // SE
