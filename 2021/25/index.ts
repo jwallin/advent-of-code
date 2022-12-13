@@ -55,9 +55,4 @@ async function partOne() {
   }
 }
 
-async function partTwo() {
-  const input = (await getInput()).map(Number);
-}
-  
-
 partOne();
