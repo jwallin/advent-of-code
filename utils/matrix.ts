@@ -191,6 +191,10 @@ export class Matrix<T = any> {
     return this.crop({x:1, y:1}, {y: this.rows.length - 2, x: this.rows[0].length - 2});
   }
 
+  normalize() {
+    return this.crop(this.minPos(), this.maxPos())
+  }
+
   toString() {
     return this.draw();
   }
@@ -199,17 +203,27 @@ export class Matrix<T = any> {
     return this.asArray().filter(x => this.get(x) === value);
   }
 
+  minPos(): Position {
+    return {
+      x: Math.min(...this.rows.map(y => y.findIndex(x => x !== undefined)).filter(x => x > -1)),
+      y: this.rows.findIndex(y => y !== undefined)
+    }
+  }
+
   maxPos(): Position {
     return {
-      x: Math.max(...this.rows.map(x => x.length)) - 1,
+      x: Math.max(...this.rows.filter(x => x !== undefined).map(x => x.length)) - 1,
       y: this.rows.length - 1
     }
   }
 
   pad(x: T, n: number = 1): Matrix<T> {
-    const w = Math.max(...this.rows.map(x => x.length));
+    const w = this.maxPos().x;
     const insertRow = Array(w).fill(x);
-    const rows = [...Array(n).fill(insertRow.slice()), ...this.rows.slice(), ...Array(n).fill(insertRow.slice())];
+    // Ensure rows don't have missing items
+    const rows = [...Array(n).fill(insertRow.slice())]
+    this.rows.slice().forEach((v, i) => rows[i + n] = v);
+    rows.push(...Array(n).fill(insertRow.slice()))
     const insertCol = Array(n).fill(x);
     return new Matrix(rows.map(r => [...insertCol, ...r, ...insertCol]));
   }
