@@ -35,6 +35,13 @@ export class LinkedList<T> {
     get value(): T {
       return this._value;
     }
+
+    step(steps: number): LinkedList<T>{
+      if (steps > 0) {
+        return this.stepRight(steps);
+      }
+      return this.stepLeft(steps * -1);
+    }
   
     stepLeft(steps: number): LinkedList<T> {
       if (steps === 0) {
@@ -73,6 +80,8 @@ export class LinkedList<T> {
     }
   
     toString(): string {
+      return this.value + '';
+      /*
       const v = [this.value];
       let curr: LinkedList<T> | undefined = this;
       while (true) {
@@ -82,7 +91,19 @@ export class LinkedList<T> {
         }
         v.push(curr.value)
       }
-      return v.join(' ')
+      return v.join(' ') */
+    }
+
+    findValue(val: T): LinkedList<T> | undefined {
+      let curr: LinkedList<T> | undefined = this;
+      do {
+        if (curr?.value === val) {
+          return curr;
+        }
+        curr = curr?.right;
+      }
+      while (curr && curr !== this)
+      return undefined;
     }
 
     static fromArray<U>(arr: U[]):LinkedList<U> {
