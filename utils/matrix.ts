@@ -119,7 +119,7 @@ export class Matrix<T = any> {
     return ADJACENT_AND_DIAGONAL.map(d => sum(p, d));
   }
 
-  adjacentAndDiagonalValues(p: Position): (T | undefined)[] {
+  adjacentAndDiagonalValues(p: Position): (T)[] {
     return Matrix.adjacentAndDiagonalPositions(p).filter(x => this.has(x)).map(p => this.get(p));
   }
 
