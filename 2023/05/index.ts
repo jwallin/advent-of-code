@@ -20,44 +20,85 @@ class SourceDestination {
     }
     return this.dest - this.source + n;
   }
+
+  stepsAwayFromNextChange(n: number) {
+    return this.source + this.range - n;
+  }
 }
 
-async function partOne() {
+async function parseInput() {
   const input = splitArrayBy((await getInput()), '');
-  
+
   const seeds = input.shift()![0].split(' ').map(Number);
   seeds.shift();
+
   const pipeline = input.map(map => {
     map.shift(); // id
     return map.map(x => {
       const [a, b, c] = x.split(' ').map(Number);
       return new SourceDestination(a, b, c);
     });
-  })
-  console.log(pipeline)
+  });
+  return { seeds, pipeline };
+}
+
+async function partOne() {
+  const { seeds, pipeline } = await parseInput();
 
   const locationNumbers = seeds.map(s => {
-    console.log(`Seed ${s}`);
-    let num = s;
-    pipeline.forEach(p => {
-      for (let i = 0; i < p.length; i++) {
-        const map = p[i];
-        if (map.has(num)) {
-          num = map.get(num);
-          break;
-        }
-      }
-      //console.log(num)
-    })
+    const { num } = mapSeed(s, pipeline);
     return num;
-  })
+  });
 
   console.log(Math.min(...locationNumbers))
 }
 
 async function partTwo() {
-  const input = (await getInput()).map(Number);
+  const { seeds, pipeline } = await parseInput();
+
+  let minLocation = Infinity;
+
+  while (seeds.length > 0) {
+    const seedNum = seeds.shift()!;
+    const seedRange = seeds.shift()!;
+    let i = seedNum;
+    while (i < seedNum + seedRange) {
+      const { num, nextChange } = mapSeed(i, pipeline);
+      minLocation = Math.min(minLocation, num);
+      i += nextChange;
+    }
+  }
+
+  console.log(minLocation)
 }
   
-
 partOne();
+partTwo();
+function mapSeed(i: number, pipeline: SourceDestination[][]) {
+  let num = i;
+  let nextChange = Infinity;
+  pipeline.forEach(p => {
+    let didMap = false;
+    for (let j = 0; j < p.length; j++) {
+      const map = p[j];
+      if (map.has(num)) {
+        nextChange = Math.min(nextChange, map.stepsAwayFromNextChange(num));
+        num = map.get(num);
+        didMap = true;
+        break;
+      }
+    }
+    
+    if (!didMap) {
+      const closestMap = p.reduce((acc, m) => {
+        if (m.source > num) {
+          return Math.min(acc, m.source - num);
+        }
+        return acc;
+      }, Infinity)
+      nextChange = Math.min(nextChange, closestMap)
+    } 
+  });
+  return { num, nextChange };
+}
+
