@@ -42,6 +42,22 @@ async function parseInput() {
   return { seeds, pipeline };
 }
 
+function mapSeed(i: number, pipeline: SourceDestination[][]) {
+  let num = i;
+  let nextChange = Infinity;
+  pipeline.forEach(p => {
+    for (let j = 0; j < p.length; j++) {
+      const map = p[j];
+      if (map.has(num)) {
+        nextChange = Math.min(nextChange, map.stepsAwayFromNextChange(num));
+        num = map.get(num);
+        break;
+      }
+    }
+  });
+  return { num, nextChange };
+}
+
 async function partOne() {
   const { seeds, pipeline } = await parseInput();
 
@@ -74,31 +90,3 @@ async function partTwo() {
   
 partOne();
 partTwo();
-function mapSeed(i: number, pipeline: SourceDestination[][]) {
-  let num = i;
-  let nextChange = Infinity;
-  pipeline.forEach(p => {
-    let didMap = false;
-    for (let j = 0; j < p.length; j++) {
-      const map = p[j];
-      if (map.has(num)) {
-        nextChange = Math.min(nextChange, map.stepsAwayFromNextChange(num));
-        num = map.get(num);
-        didMap = true;
-        break;
-      }
-    }
-    
-    if (!didMap) {
-      const closestMap = p.reduce((acc, m) => {
-        if (m.source > num) {
-          return Math.min(acc, m.source - num);
-        }
-        return acc;
-      }, Infinity)
-      nextChange = Math.min(nextChange, closestMap)
-    } 
-  });
-  return { num, nextChange };
-}
-
