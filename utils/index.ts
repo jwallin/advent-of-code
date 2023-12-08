@@ -133,3 +133,22 @@ export function between(a:number, b:number, inclusive:boolean = true):number[] {
   }
   return arr;
 }
+
+// Function to calculate the greatest common divisor (GCD) of two numbers
+function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
+// Function to calculate the least common multiple (LCM) of two numbers
+function lcm(a: number, b: number): number {
+  return Math.abs(a * b) / gcd(a, b);
+}
+
+// Function to calculate the least common denominator of an array of numbers
+export function lcd(numbers: number[]) {
+  if (numbers.length < 2) {
+    throw new Error('Array must contain at least two numbers.');
+  }
+
+  return numbers.reduce((prev, curr) => lcm(prev, curr));
+}
