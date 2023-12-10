@@ -1,8 +1,6 @@
-import { equals, fromKey, Position, toKey } from "./position";
-import { KeyVal } from "./types";
+import { fromKey, Position, toKey } from "./position";
 
-
-export function weightedDijkstra(start: Position, dest: Position, neighborsFn: (n: Position) => [Position, number][]): number | undefined {
+export function weightedDijkstraWithDistances(start: Position, dest: Position | undefined, neighborsFn: (n: Position) => [Position, number][]): [number | undefined,  Map<string, number>]{
   const nodes = new Set([toKey(start)]);
   const seenNodes = new Set([toKey(start)]);
   const distances = new Map<string, number>();
@@ -15,7 +13,7 @@ export function weightedDijkstra(start: Position, dest: Position, neighborsFn: (
   while (nodes.size) {
     const closest = [...nodes].reduce(minBy((n:string) => getDist(n)));
     if (dest && closest === toKey(dest)) {
-      return distances.get(toKey(dest));
+      return [distances.get(toKey(dest)), distances];
     }
     nodes.delete(closest);
     const neighbors = neighborsFn(fromKey(closest));
@@ -32,44 +30,18 @@ export function weightedDijkstra(start: Position, dest: Position, neighborsFn: (
       }
     });
   }
-  return undefined;
+  return [undefined, distances];
 }
 
-export function dijkstra(start: Position, dest: Position, neighborsFn: (n: Position) => Position[]): number | undefined {
+export function weightedDijkstra(start: Position, dest: Position | undefined, neighborsFn: (n: Position) => [Position, number][]): number | undefined { 
+  const [d,] = weightedDijkstraWithDistances(start, dest, neighborsFn);
+  return d;
+}
+
+export function dijkstra(start: Position, dest: Position | undefined, neighborsFn: (n: Position) => Position[]): number | undefined {
   return weightedDijkstra(start, dest, (n) => neighborsFn(n).map(x => [x, 1]));
 }
 
-export function shortestPath(source:Position, target:Position,  neighborsFn: (n: Position) => Position[]): Position[] | undefined{
-  if (equals(source, target)) {
-    return [];
-  }
-  const queue = [ toKey(source) ];
-  const visited = new Set([toKey(source)]);
-  const predecessor:KeyVal<string> = {};
-  let tail = 0;
-  while (tail < queue.length) {
-    let u = queue[tail++];  // Pop a vertex off the queue.
-    const neighbors = neighborsFn(fromKey(u));
-    for (let i = 0; i < neighbors.length; ++i) {
-      const v = neighbors[i];
-      const vKey = toKey(v);
-      if (visited.has(vKey)) {
-        continue;
-      }
-      visited.add(vKey);
-      if (equals(v, target)) {   // Check if the path is complete.
-        const path = [ v ];   // If so, backtrack through the path.
-        while (!equals(fromKey(u), source)) {
-          path.push(fromKey(u));
-          u = predecessor[u];          
-        }
-        path.push(fromKey(u));
-        path.reverse();
-        return path;
-      }
-      predecessor[vKey] = u;
-      queue.push(vKey);
-    }
-  }
-  return undefined;
+export function dijkstraWithDistances(start: Position, dest: Position | undefined, neighborsFn: (n: Position) => Position[]): [number | undefined,  Map<string, number>] {
+  return weightedDijkstraWithDistances(start, dest, (n) => neighborsFn(n).map(x => [x, 1]));
 }
