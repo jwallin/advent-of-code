@@ -3,7 +3,6 @@ import { dijkstraWithDistances } from '../../utils/dijkstra';
 import { Matrix } from '../../utils/matrix';
 import { Position, equals, sum, toKey } from '../../utils/position';
 
-
 enum DIR {
   N, E, S, W
 }
@@ -103,8 +102,6 @@ async function partTwo() {
 
   console.log(pointsInside.length);
 }
-  
+
 partOne();
 partTwo();
-
-
