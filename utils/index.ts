@@ -13,7 +13,7 @@ export const multiply = (a: number, b: number): number => a * b;
 export const intify = (input: string[]): (string | number)[] => input.map(s => isNaN(Number(s)) ? s : Number(s));
 export const fillArray = <T>(length: number, value: T): T[] => Array.from<T>({ length }).fill(value);
 export const lastValue = <T>(arr: T[]) => arr[arr.length - 1];
-
+export const arrayEquals = <T>(a: T[], b: T[]): boolean => a.every((v, i) => v === b[i]);
 export const pairs = <T>(array: T[]): T[][] => Array.from(combinations(array, 2));
 export const triplets = <T>(array:T[]): T[][] => Array.from(combinations(array, 3));
 
