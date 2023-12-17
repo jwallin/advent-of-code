@@ -1,5 +1,16 @@
 import { Position, sum } from './position';
 
+export enum DIR {
+  N = 0, E = 1, S = 2, W = 3
+}
+
+export const DIRECTIONS = {
+  [DIR.N]: {x: 0, y: -1},
+  [DIR.E]: {x: 1, y: 0},
+  [DIR.S]: {x: 0, y: 1},
+  [DIR.W]: {x: -1, y: 0},
+}
+
 export const ADJACENT: Position[] =[
   { x: 0, y: -1 },  // N
   { x: 1, y: 0 },   // E

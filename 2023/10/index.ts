@@ -1,18 +1,7 @@
 import { getInput } from '../../utils';
 import { dijkstraWithDistances } from '../../utils/dijkstra';
-import { Matrix } from '../../utils/matrix';
+import { DIR, DIRECTIONS, Matrix } from '../../utils/matrix';
 import { Position, equals, sum, toKey } from '../../utils/position';
-
-enum DIR {
-  N, E, S, W
-}
-
-const DIRECTIONS = {
-  [DIR.N]: {x: 0, y: -1},
-  [DIR.E]: {x: 1, y: 0},
-  [DIR.S]: {x: 0, y: 1},
-  [DIR.W]: {x: -1, y: 0},
-}
 
 function getValidDirs(s: string) {
   switch (s) {
