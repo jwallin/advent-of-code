@@ -1,9 +1,7 @@
-import { getInput, splitArrayBy } from '../../utils';
+import { arrayEquals, cloneArray, getInput, splitArrayBy } from '../../utils';
 
-async function partOne() {
-  const [ruleInput, printInput] = splitArrayBy(await getInput(), '');
-
-  const rules = ruleInput.map(r => r.split('|').map(Number)).reduce<Map<number, number[]>>((rules, r) => {
+function parseRules(ruleInput: string[]) {
+  return ruleInput.map(r => r.split('|').map(Number)).reduce<Map<number, number[]>>((rules, r) => {
     const [before, after] = r;
 
     if (!rules.has(before)) {
@@ -12,11 +10,17 @@ async function partOne() {
     rules.get(before)!.push(after);
 
     return rules;
-    
-  }, new Map<number, number[]>())
+
+  }, new Map<number, number[]>());
+}
+
+async function partOne() {
+  const [ruleInput, printInput] = splitArrayBy(await getInput(), '');
+
+  const rules = parseRules(ruleInput);
 
   const prints = printInput.map(x => x.split(',').map(Number));
-  const sum = prints.reduce<number>((acc, print, i) => {
+  const sum = prints.reduce<number>((acc, print) => {
     for (let i = 0; i < print.length; i++) {
       const page = print[i];
       if (!rules.has(page)) {
@@ -34,10 +38,34 @@ async function partOne() {
   console.log(sum)
 }
 
-
 async function partTwo() {
-  const input = (await getInput()).map(Number);
-}
-  
+  const [ruleInput, printInput] = splitArrayBy(await getInput(), '');
+  const rules = parseRules(ruleInput);
+  const updates = printInput.map(x => x.split(',').map(Number));
 
-partOne();
+  const sum = updates.reduce<number>((acc, u) => {
+    const validUpdate = cloneArray(u);
+    let isValid = true;
+    do { 
+      isValid = true;
+      for (let i = 0; i < validUpdate.length - 1; i++) {
+        const a = validUpdate[i];
+        const b = validUpdate[i + 1];
+        
+        if (rules.get(b)?.some(x => x === a)) {
+          validUpdate[i] = b;
+          validUpdate[i + 1]  = a;
+          isValid = false;
+        }
+      }
+      
+    } while (!isValid)
+    if (!arrayEquals(u, validUpdate)) {
+      return acc + validUpdate[(Math.ceil(validUpdate.length / 2) - 1)];
+    }
+    return acc;
+  }, 0); 
+  console.log(sum)
+}
+
+partTwo();
