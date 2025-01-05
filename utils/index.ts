@@ -17,6 +17,11 @@ export const arrayEquals = <T>(a: T[], b: T[]): boolean => a.every((v, i) => v =
 export const pairs = <T>(array: T[]): T[][] => Array.from(combinations(array, 2));
 export const triplets = <T>(array:T[]): T[][] => Array.from(combinations(array, 3));
 export const cloneArray = <T>(a: T[]) => [...a];
+export const spliceAndReturn = <T>(a: T[], start: number, deleteCount: number) => {
+  const r = cloneArray(a);
+  r.splice(start, deleteCount);
+  return r;
+}
 
 export const getInput = async (filename:string = 'input.txt'):Promise<string[]> => await lines(filename);
 
