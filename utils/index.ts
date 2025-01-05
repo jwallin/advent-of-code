@@ -154,9 +154,3 @@ export function lcd(numbers: number[]) {
 
   return numbers.reduce((prev, curr) => lcm(prev, curr));
 }
-
-export const spliceAndReturn = <T>(a: T[], start: number, deleteCount: number) => {
-  const r = cloneArray(a);
-  r.splice(start, deleteCount);
-  return r;
-}
