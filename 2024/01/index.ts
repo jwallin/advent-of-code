@@ -17,15 +17,15 @@ async function getLists() {
 
 async function partTwo() {
   const { left, right } = await getLists();
-  const occurences = right.reduce<Map<Number, number>>((p: Map<Number, number>, c: number): Map<Number, number> => {
+  const occurences = right.reduce<Map<number, number>>((p: Map<number, number>, c: number): Map<number, number> => {
     if (p.has(c)) {
       p.set(c, p.get(c)! + 1);
     } else {
       p.set(c, 1);
     }
     return p;
-  }, new Map<Number, number>())
-  console.log(left.reduce((p,c,i) => {
+  }, new Map<number, number>())
+  console.log(left.reduce((p, c) => {
     const occ = occurences.get(c) || 0;
     return p + occ * c;
   }, 0));
