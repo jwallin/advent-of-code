@@ -24,7 +24,6 @@ async function partOne() {
     //Traverse 
     let view = sum(guard, DIRECTIONS[direction]);
     while (m.has(view) && m.get(view) === '#') {
-      console.log((dir.indexOf(direction) + 1) % dir.length)
       direction = dir[(dir.indexOf(direction) + 1) % dir.length];
       
       view = sum(guard, DIRECTIONS[direction]);
@@ -40,8 +39,48 @@ async function partOne() {
 }
 
 async function partTwo() {
-  const input = (await getInput()).map(Number);
+  const input = (await getInput()).map(x => x.split(''));
+  const matrix = new Matrix(input);
+  const dir =  Object.keys(DIRECTIONS);
+
+  const candidateObstacles = matrix.asArray().filter(x => matrix.has(x) && matrix.get(x) === '.');
+  let count = 0;
+  candidateObstacles.forEach(c => {
+
+    const m = matrix.clone();
+    let direction = '^';
+    let guard = m.positionsWithValue('^')[0];
+
+    const visited = new Set<string>();
+    visited.add(direction + toKey(guard))
+
+    m.set(c, '#')
+    
+    let isLoop = false;
+    while (m.has(guard) && isLoop === false) {
+      
+      //Traverse 
+      let view = sum(guard, DIRECTIONS[direction]);
+      while (m.has(view) && m.get(view) === '#') {
+        direction = dir[(dir.indexOf(direction) + 1) % dir.length];
+        view = sum(guard, DIRECTIONS[direction]);
+      }
+
+      m.set(guard, direction);
+      const visitedKey = direction + toKey(view);
+      if (visited.has(visitedKey)) {
+        count++;
+        isLoop = true;
+        break;
+      }
+      if (m.has(view)) {
+        visited.add(visitedKey);
+      }
+      guard = view;
+    }
+  });
+  console.log(count)
 }
-  
 
 partOne();
+partTwo();
